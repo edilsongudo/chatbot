@@ -185,10 +185,10 @@ export default function ChatInterface() {
 
     if (currentSession) {
       // If we have a current session with a title, use it as the page title
-      document.title = currentSession.title || "Spark"
+      document.title = currentSession.title || "Muse"
     } else {
       // Default to "Spark" for new chats or when no session is selected
-      document.title = "Spark"
+      document.title = "Muse"
     }
   }, [currentSessionId, sessions])
 
@@ -988,12 +988,14 @@ export default function ChatInterface() {
       {/* Sidebar - com animação de slide */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 border-r border-zinc-800 flex flex-col bg-zinc-900 transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 w-[260px] border-r border-zinc-800 flex flex-col bg-zinc-900 transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
-          <h2 className="font-medium">Chats</h2>
+        <div className="h-[60px] px-4 border-b border-zinc-800 flex items-center justify-between">
+          <div className="w-8 h-8">
+            <SparkLogo />
+          </div>
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
@@ -1013,7 +1015,7 @@ export default function ChatInterface() {
               className="h-8 w-8 hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
               title="New chat"
             >
-              <Plus className="h-4 w-4" />
+              <PenSquare className="h-4 w-4" />
             </Button>
             {isMobile && (
               <Button
@@ -1066,8 +1068,7 @@ export default function ChatInterface() {
                 ) : (
                   <div className="flex items-center justify-between">
                     <div className="text-left flex items-center gap-2 flex-1 min-w-0">
-                      <MessageSquare className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-                      <div className="text-sm font-medium truncate">
+                      <div className="text-[13px] font-normal truncate">
                         {session.title || `Chat ${session.id.slice(0, 8)}`}
                       </div>
                     </div>
@@ -1123,32 +1124,26 @@ export default function ChatInterface() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col w-full h-screen overflow-hidden bg-zinc-850">
         {/* Top Bar - Fixa em todos os dispositivos */}
-        <div className="sticky top-0 z-20 flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-850">
-          <div className="flex items-center">
+        <div className="sticky top-0 z-20 flex items-center h-[60px] px-4 border-b border-zinc-800 bg-zinc-850">
+          <div className="flex items-center gap-2">
             {!sidebarOpen && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleSidebar}
-                className="mr-2 md:hidden hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+                className="md:hidden hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
               >
                 <Menu className="h-5 w-5" />
               </Button>
             )}
-          </div>
-          <div className="flex items-center">
             <Button
               variant="ghost"
-              className="flex items-center gap-2 hover:bg-zinc-700/70 text-white hover:text-white transition-all duration-200 rounded-md spark-button"
+              className="flex items-center gap-2 hover:bg-zinc-700/70 text-white hover:text-white transition-all duration-200 rounded-md p-0 md:p-2"
             >
-              <SparkLogo className="w-6 h-6 flex-shrink-0" />
-              <span className="text-lg text-white hidden sm:inline">Spark</span>
-              <Badge variant="secondary" className="bg-blue-600 text-xs text-white whitespace-nowrap">
-                beta
-              </Badge>
+              <span className="text-lg text-white font-medium">Muse</span>
             </Button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto md:hidden">
             <Button
               variant="ghost"
               size="icon"
@@ -1160,6 +1155,7 @@ export default function ChatInterface() {
             </Button>
           </div>
         </div>
+
 
         {/* Chat Messages - com padding para evitar que o conteúdo fique sob o input fixo */}
         <div className="flex-1 overflow-auto pb-24">
@@ -1215,7 +1211,7 @@ export default function ChatInterface() {
                       </Avatar>
                       <div className="flex-1 space-y-2 min-w-0">
                         <div className="text-sm text-zinc-400 flex items-center gap-2">
-                          Spark {message.id && `(ID: ${message.id})`}
+                          Muse {message.id && `(ID: ${message.id})`}
                           {message.is_edited && <span className="text-xs text-zinc-500 italic">(edited)</span>}
                         </div>
                         {editingMessageIndex === index ? (
@@ -1248,7 +1244,7 @@ export default function ChatInterface() {
                           </div>
                         ) : (
                           <div
-                            className="text-sm leading-relaxed prose prose-invert max-w-none select-text"
+                            className="text-base leading-relaxed prose prose-invert max-w-none select-text"
                             dangerouslySetInnerHTML={{ __html: markdownToHtml(message.content) }}
                             onClick={(e) => {
                               // Don't do anything on click to allow text selection
@@ -1264,11 +1260,10 @@ export default function ChatInterface() {
                           <div className="flex gap-2 mt-2">
                             <button
                               onClick={() => copyMessageContent(index)}
-                              className={`p-1.5 rounded-md ${
-                                copiedMessageIndex === index
-                                  ? "text-green-400"
-                                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50"
-                              } transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
+                              className={`p-1.5 rounded-md ${copiedMessageIndex === index
+                                ? "text-green-400"
+                                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50"
+                                } transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
                               aria-label={copiedMessageIndex === index ? "Copied" : "Copy to clipboard"}
                               title={copiedMessageIndex === index ? "Copied!" : "Copy to clipboard"}
                             >
@@ -1287,7 +1282,7 @@ export default function ChatInterface() {
                       <div className="user-message">
                         <div className="flex items-start justify-between">
                           <div className="text-sm text-zinc-400 flex items-center gap-2">
-                            Ian {message.id && `(ID: ${message.id})`}
+                            Edilson {message.id && `(ID: ${message.id})`}
                             {message.is_edited && <span className="text-xs text-zinc-500 italic">(edited)</span>}
                           </div>
                         </div>
@@ -1325,7 +1320,7 @@ export default function ChatInterface() {
                               </div>
                             </div>
                           ) : (
-                            <div className="text-sm leading-relaxed whitespace-pre-wrap bg-zinc-800 p-4 rounded-lg user-message-bubble">
+                            <div className="text-base leading-relaxed whitespace-pre-wrap bg-zinc-800 p-4 rounded-lg user-message-bubble">
                               {message.content}
                             </div>
                           )}
@@ -1334,11 +1329,10 @@ export default function ChatInterface() {
                           <div className="flex gap-2 mt-2 ml-11">
                             <button
                               onClick={() => copyMessageContent(index)}
-                              className={`p-1.5 rounded-md ${
-                                copiedMessageIndex === index
-                                  ? "text-green-400"
-                                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50"
-                              } transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
+                              className={`p-1.5 rounded-md ${copiedMessageIndex === index
+                                ? "text-green-400"
+                                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50"
+                                } transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
                               aria-label={copiedMessageIndex === index ? "Copied" : "Copy to clipboard"}
                               title={copiedMessageIndex === index ? "Copied!" : "Copy to clipboard"}
                             >
@@ -1350,9 +1344,8 @@ export default function ChatInterface() {
                             </button>
                             <button
                               onClick={() => startEditingMessage(index)}
-                              className={`p-1.5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50 transition-all duration-200 ${
-                                hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
-                              }`}
+                              className={`p-1.5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
+                                }`}
                               aria-label="Edit message"
                               title="Edit message"
                             >
@@ -1362,9 +1355,8 @@ export default function ChatInterface() {
                             {/* Branch navigation controls */}
                             {hasChildren && branchCount > 1 && (
                               <div
-                                className={`flex items-center gap-1 text-zinc-400 ${
-                                  hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
-                                } transition-all duration-200`}
+                                className={`flex items-center gap-1 text-zinc-400 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
+                                  } transition-all duration-200`}
                               >
                                 <button
                                   onClick={() => navigateToBranch(messageId, "prev")}
@@ -1404,7 +1396,7 @@ export default function ChatInterface() {
                     <SparkLogo />
                   </Avatar>
                   <div className="flex-1 space-y-2">
-                    <div className="text-sm text-zinc-400">Spark</div>
+                    <div className="text-sm text-zinc-400">Muse</div>
                     <div className="text-sm leading-relaxed">
                       <span className="shimmer-text">is thinking...</span>
                     </div>
@@ -1437,7 +1429,7 @@ export default function ChatInterface() {
                   }
                 }}
                 placeholder="Ask anything"
-                className="w-full bg-zinc-700 rounded-lg px-4 py-3 pr-16 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md resize-none overflow-y-auto min-h-[46px] max-h-[200px]"
+                className="w-full bg-[#303030] rounded-3xl px-4 py-3 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md resize-none overflow-y-auto min-h-[46px] max-h-[200px]"
                 disabled={isLoading}
                 rows={1}
               />

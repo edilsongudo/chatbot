@@ -36,7 +36,7 @@ export default function ClientLayout({
     <html lang="en">
       <body className={inter.className}>
         <Head>
-          <link rel="icon" href="https://supersparks.s3.ca-central-1.amazonaws.com/chatbot/img/supersparks.png" />
+          <link rel="icon" href="https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png" />
         </Head>
         <LoadingScreen />
         <FaviconHandler />

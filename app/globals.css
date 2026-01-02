@@ -5,24 +5,32 @@
 
 html,
 body {
-  background-color: rgb(24, 24, 27); /* zinc-900 */
-  color: white;
+  background-color: rgb(33, 33, 33);
+  /* #212121 */
+  color: rgb(178, 178, 178);
+  /* #B2B2B2 */
+  line-height: 28px;
 }
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 0, 0, 0;
-  --max-content-width: 650px; /* Maximum width for message content */
-  --sidebar-bg: rgb(24, 24, 27); /* zinc-900 */
-  --main-bg: rgb(32, 32, 36); /* slightly lighter than zinc-900 */
-  --textarea-bg: rgb(63, 63, 70); /* zinc-700 */
-  --user-message-bg: rgb(39, 39, 42); /* zinc-800 */
+  --foreground-rgb: 178, 178, 178;
+  --background-start-rgb: 33, 33, 33;
+  --background-end-rgb: 33, 33, 33;
+  --max-content-width: 650px;
+  /* Maximum width for message content */
+  --sidebar-bg: rgb(24, 24, 24);
+  /* #181818 */
+  --main-bg: rgb(33, 33, 33);
+  /* #212121 */
+  --textarea-bg: rgb(63, 63, 70);
+  /* zinc-700 - keeping for now */
+  --user-message-bg: rgb(39, 39, 42);
+  /* zinc-800 - keeping for now */
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  background: rgb(var(--background-start-rgb));
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -35,7 +43,8 @@ body {
 
 /* Modifique a classe chat-container para centralizar todo o conteúdo da conversa */
 .chat-container {
-  max-width: 900px; /* Largura máxima do container da conversa */
+  max-width: 900px;
+  /* Largura máxima do container da conversa */
   margin: 0 auto;
   width: 100%;
   padding: 0 16px;
@@ -44,9 +53,11 @@ body {
 /* Adicione uma classe para limitar a largura do conteúdo da mensagem */
 .prose {
   @apply text-zinc-200;
-  max-width: 100%; /* Importante: limita a largura do conteúdo */
+  max-width: 100%;
+  /* Importante: limita a largura do conteúdo */
   line-height: 1.6;
-  overflow-wrap: break-word; /* Garante que palavras longas quebrem */
+  overflow-wrap: break-word;
+  /* Garante que palavras longas quebrem */
   word-break: break-word;
 }
 
@@ -99,8 +110,8 @@ body {
   @apply mb-1;
 }
 
-.prose li > ul,
-.prose li > ol {
+.prose li>ul,
+.prose li>ol {
   @apply mb-0 mt-1;
 }
 
@@ -136,7 +147,8 @@ body {
   width: 100%;
   max-width: 100%;
   display: block;
-  overflow-x: auto; /* Permite rolagem horizontal para tabelas grandes */
+  overflow-x: auto;
+  /* Permite rolagem horizontal para tabelas grandes */
 }
 
 .prose th {
@@ -266,9 +278,10 @@ pre:hover .code-copy-button {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 13%;
+    --foreground: 0 0% 70%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
@@ -291,7 +304,7 @@ pre:hover .code-copy-button {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
+    --sidebar-background: 0 0% 9.4%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -306,6 +319,7 @@ pre:hover .code-copy-button {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -317,12 +331,10 @@ pre:hover .code-copy-button {
 .shimmer-text {
   position: relative;
   display: inline-block;
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.8) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background-image: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(255, 255, 255, 0) 100%);
   background-size: 200% 100%;
   background-repeat: no-repeat;
   background-clip: text;
@@ -681,6 +693,7 @@ button:hover {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -100% 0;
   }

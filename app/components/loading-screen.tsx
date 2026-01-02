@@ -27,7 +27,7 @@ export function LoadingScreen() {
         <div className="absolute -inset-8 rounded-full border-t-2 border-blue-400 opacity-50 animate-spin-slow"></div>
         <div className="absolute -inset-12 rounded-full border-t-2 border-blue-300 opacity-30 animate-spin-slower"></div>
       </div>
-      <div className="mt-8 text-zinc-400 text-sm font-medium animate-pulse">Loading Spark</div>
+      <div className="mt-8 text-zinc-400 text-sm font-medium animate-pulse">Loading Muse</div>
     </div>
   )
 }

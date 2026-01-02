@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const systemMessage = {
       role: "system",
       content:
-        "You are Spark, a helpful and knowledgeable AI assistant. Provide clear, accurate, and engaging responses.",
+        "You are Muse, a helpful and knowledgeable AI assistant. Provide clear, accurate, and engaging responses.",
     }
 
     // Create the completion with proper configuration

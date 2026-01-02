@@ -8,7 +8,7 @@ export function UserAvatar() {
   return (
     <div className="w-full h-full overflow-hidden rounded-full bg-zinc-800">
       <img
-        src="https://supersparks.s3.ca-central-1.amazonaws.com/chatbot/img/ifuT0Qu1_400x400.jpg"
+        src="https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/edilson2.jpg"
         alt="User Avatar"
         className="w-full h-full object-cover"
         style={{

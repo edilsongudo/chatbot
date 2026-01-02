@@ -8,7 +8,7 @@ export function FaviconHandler() {
     const link = (document.querySelector("link[rel*='icon']") as HTMLLinkElement) || document.createElement("link")
     link.type = "image/png"
     link.rel = "shortcut icon"
-    link.href = "https://supersparks.s3.ca-central-1.amazonaws.com/chatbot/img/supersparks.png"
+    link.href = "https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png"
     document.getElementsByTagName("head")[0].appendChild(link)
   }, [])
 

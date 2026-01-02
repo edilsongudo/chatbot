@@ -11,12 +11,12 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
-  title: "Spark Chat",
+  title: "Muse Chat",
   description: "AI-powered chat assistant",
   icons: {
-    icon: "https://supersparks.s3.ca-central-1.amazonaws.com/chatbot/img/supersparks.png",
-    shortcut: "https://supersparks.s3.ca-central-1.amazonaws.com/chatbot/img/supersparks.png",
-    apple: "https://supersparks.s3.ca-central-1.amazonaws.com/chatbot/img/supersparks.png",
+    icon: "https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png",
+    shortcut: "https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png",
+    apple: "https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png",
   },
   generator: 'v0.app'
 }

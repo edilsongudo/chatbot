@@ -12,8 +12,8 @@ export function SparkLogo({ className }: SparkLogoProps) {
   return (
     <div className={`relative bg-zinc-800 rounded-full overflow-hidden ${className || "w-full h-full"}`}>
       <img
-        src="https://supersparks.s3.ca-central-1.amazonaws.com/chatbot/img/supersparks.png"
-        alt="Spark Logo"
+        src="https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png"
+        alt="Muse Logo"
         className="w-full h-full object-cover"
         style={{
           display: imageLoaded ? "block" : "none",
