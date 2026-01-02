@@ -1,0 +1,766 @@
+@import "./highlight.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background-color: rgb(24, 24, 27); /* zinc-900 */
+  color: white;
+}
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+  --max-content-width: 650px; /* Maximum width for message content */
+  --sidebar-bg: rgb(24, 24, 27); /* zinc-900 */
+  --main-bg: rgb(32, 32, 36); /* slightly lighter than zinc-900 */
+  --textarea-bg: rgb(63, 63, 70); /* zinc-700 */
+  --user-message-bg: rgb(39, 39, 42); /* zinc-800 */
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Remova ou modifique a classe message-content para não centralizar o conteúdo individualmente */
+.message-content {
+  max-width: var(--max-content-width);
+  width: 100%;
+  /* Remova margin: 0 auto; para não centralizar individualmente */
+}
+
+/* Modifique a classe chat-container para centralizar todo o conteúdo da conversa */
+.chat-container {
+  max-width: 900px; /* Largura máxima do container da conversa */
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 16px;
+}
+
+/* Adicione uma classe para limitar a largura do conteúdo da mensagem */
+.prose {
+  @apply text-zinc-200;
+  max-width: 100%; /* Importante: limita a largura do conteúdo */
+  line-height: 1.6;
+  overflow-wrap: break-word; /* Garante que palavras longas quebrem */
+  word-break: break-word;
+}
+
+/* Garanta que as tabelas e blocos de código não ultrapassem a largura */
+.prose pre,
+.prose table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.prose a {
+  @apply text-blue-400 hover:text-blue-300 transition-colors;
+  text-decoration: underline;
+}
+
+.prose p {
+  @apply mb-4;
+}
+
+.prose h1 {
+  @apply text-2xl font-bold text-white mb-4 mt-6 pb-1 border-b border-zinc-700;
+}
+
+.prose h2 {
+  @apply text-xl font-bold text-white mb-3 mt-5 pb-1 border-b border-zinc-800;
+}
+
+.prose h3 {
+  @apply text-lg font-bold text-white mb-3 mt-4;
+}
+
+.prose h4 {
+  @apply text-base font-bold text-white mb-2 mt-4;
+}
+
+.prose h5,
+.prose h6 {
+  @apply font-bold text-white mb-2 mt-3;
+}
+
+.prose ul {
+  @apply pl-6 mb-4 list-disc;
+}
+
+.prose ol {
+  @apply pl-6 mb-4 list-decimal;
+}
+
+.prose li {
+  @apply mb-1;
+}
+
+.prose li > ul,
+.prose li > ol {
+  @apply mb-0 mt-1;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-zinc-600 pl-4 italic my-4 text-zinc-300;
+}
+
+/* Improve code block appearance */
+.prose pre {
+  @apply bg-zinc-900 p-4 rounded-md overflow-x-auto my-4 text-sm;
+  max-width: 100%;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 text-zinc-200;
+  font-family: "Menlo", "Monaco", "Courier New", monospace;
+}
+
+/* Add a subtle border to code blocks */
+.prose pre {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure inline code is properly styled */
+.prose code:not(pre code) {
+  @apply bg-zinc-800 px-1.5 py-0.5 rounded text-sm text-zinc-200 font-mono;
+}
+
+.prose table {
+  @apply my-4 border-collapse;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  overflow-x: auto; /* Permite rolagem horizontal para tabelas grandes */
+}
+
+.prose th {
+  @apply bg-zinc-800 text-left p-2 border border-zinc-700 font-bold;
+}
+
+.prose td {
+  @apply border border-zinc-700 p-2;
+}
+
+.prose img {
+  @apply rounded-md my-4;
+  max-width: 100%;
+  height: auto;
+}
+
+.prose hr {
+  @apply border-zinc-700 my-6;
+}
+
+.prose strong,
+.prose b {
+  @apply font-bold text-white;
+}
+
+.prose em,
+.prose i {
+  @apply italic;
+}
+
+.prose del {
+  @apply line-through;
+}
+
+/* Add hover styles for message containers */
+.message-container {
+  @apply relative;
+  transition: background-color 0.2s ease;
+}
+
+.message-container:hover .copy-button {
+  @apply opacity-100;
+}
+
+.copy-button {
+  @apply opacity-0 transition-opacity duration-200;
+}
+
+/* Code block copy button styles */
+.code-block-wrapper {
+  position: relative;
+}
+
+.code-copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(30, 30, 30, 0.8);
+  color: #d4d4d4;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* Show button on hover */
+pre:hover .code-copy-button {
+  opacity: 1;
+}
+
+.code-copy-button:hover {
+  background-color: rgba(60, 60, 60, 0.8);
+}
+
+.code-copy-button.copied {
+  background-color: rgba(35, 134, 54, 0.8);
+  border-color: rgba(46, 160, 67, 0.4);
+  color: #ffffff;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Add these styles at the end of the file */
+
+/* Shimmer effect for "is thinking..." text */
+.shimmer-text {
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: rgba(180, 180, 180, 0.8);
+  animation: shimmer 2s infinite;
+}
+
+/* User message styling */
+.user-message {
+  max-width: 70%;
+}
+
+/* Remove hover effect from message containers */
+.message-container:hover {
+  background-color: transparent;
+}
+
+/* Background colors for different areas */
+.bg-zinc-850 {
+  background-color: var(--main-bg);
+}
+
+.bg-zinc-900 {
+  background-color: var(--sidebar-bg);
+}
+
+/* Textarea styling */
+textarea.bg-zinc-700 {
+  background-color: var(--textarea-bg);
+}
+
+/* Textarea scrollable styling */
+textarea.resize-none {
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+textarea.resize-none::-webkit-scrollbar {
+  width: 6px;
+}
+
+textarea.resize-none::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea.resize-none::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+textarea.resize-none::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* User message bubble styling */
+.user-message-bubble {
+  background-color: var(--user-message-bg);
+  border-radius: 1rem;
+  border-top-left-radius: 0.25rem;
+}
+
+/* User avatar container */
+.user-avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure avatar is perfectly round */
+.rounded-full {
+  border-radius: 9999px;
+}
+
+/* Code block styling with highlight.js */
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em;
+  color: #abb2bf;
+  background: #282c34;
+  border-radius: 0.375rem;
+}
+
+/* Add these styles at the end of the file */
+
+/* Add these styles at the end of the file */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1 !important;
+}
+
+.group {
+  position: relative;
+}
+
+/* Enhanced hover effects */
+.hover-scale {
+  transition: transform 0.2s ease-in-out;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Smooth transitions for all buttons */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Improved focus styles */
+*:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+  color: inherit;
+}
+
+/* Enhanced dropdown animations */
+.dropdown-content-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.dropdown-content-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.dropdown-content-exit {
+  opacity: 1;
+}
+
+.dropdown-content-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 200ms, transform 200ms;
+}
+
+/* Garantir que os ícones permaneçam claros no hover */
+button:hover svg {
+  color: inherit;
+}
+
+/* Corrigir o estilo de hover para botões */
+button.hover\:bg-zinc-700\/70:hover {
+  color: white;
+}
+
+/* Garantir que os botões ghost mantenham cores claras no hover */
+.hover\:text-zinc-100:hover {
+  color: rgb(244, 244, 245) !important;
+}
+
+/* Remover qualquer estilo que possa estar causando o problema */
+button:hover {
+  color: inherit;
+}
+
+/* Corrigir o estilo de foco para manter cores claras */
+*:focus {
+  color: inherit;
+}
+
+/* Estilos específicos para o botão Spark */
+.spark-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spark-button:hover {
+  color: white !important;
+}
+
+.spark-button:hover span,
+.spark-button:hover .badge,
+.spark-button:hover svg {
+  color: white !important;
+}
+
+/* Ajustes para responsividade mobile */
+@media (max-width: 768px) {
+  .chat-container {
+    padding: 0 8px;
+    max-width: 100%;
+  }
+
+  .prose {
+    font-size: 0.9rem;
+  }
+
+  /* Aumentar o padding inferior para evitar que o conteúdo fique escondido sob o input fixo */
+  .pb-24 {
+    padding-bottom: 6rem;
+  }
+
+  /* Ajustes para a navbar em dispositivos móveis */
+  .spark-button {
+    padding: 0.5rem;
+  }
+
+  .spark-button span {
+    display: none;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.3rem;
+  }
+}
+
+/* Garantir que o badge "beta" não fique deformado */
+.badge {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Melhorar a aparência em dispositivos móveis */
+@media (max-width: 640px) {
+  .message-container {
+    padding: 2px 8px;
+    margin-bottom: 8px;
+  }
+
+  .prose pre {
+    max-width: calc(100vw - 32px);
+    overflow-x: auto;
+  }
+
+  /* Ajustar o tamanho da fonte para melhor legibilidade */
+  .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+/* Estilos para garantir que a navbar e o input permaneçam fixos */
+.sticky {
+  position: sticky;
+  z-index: 20;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.bottom-0 {
+  bottom: 0;
+}
+
+/* Ajuste adicional para o layout em telas pequenas */
+@media (max-width: 640px) {
+  .spark-button {
+    padding: 0.5rem;
+  }
+
+  .spark-button span {
+    display: none;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.3rem;
+  }
+}
+
+/* Garantir que o conteúdo principal ocupe toda a altura disponível */
+.h-screen {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Ajuste para o layout flexível */
+.flex-1 {
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+/* Code highlighting styles */
+.hljs {
+  background: #282c34;
+  color: #abb2bf;
+  border-radius: 0.375rem;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.hljs-doctag,
+.hljs-keyword,
+.hljs-formula {
+  color: #c678dd;
+}
+
+.hljs-section,
+.hljs-name,
+.hljs-selector-tag,
+.hljs-deletion,
+.hljs-subst {
+  color: #e06c75;
+}
+
+.hljs-literal {
+  color: #56b6c2;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+  color: #98c379;
+}
+
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-type,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-number {
+  color: #d19a66;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link,
+.hljs-meta,
+.hljs-selector-id,
+.hljs-title {
+  color: #61aeee;
+}
+
+.hljs-built_in,
+.hljs-title.class_,
+.hljs-class .hljs-title {
+  color: #e6c07b;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Animation for shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Add styles for branch navigation at the end of the file */
+
+.branch-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s ease;
+}
+
+.branch-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: rgba(63, 63, 70, 0.5);
+  color: rgb(161, 161, 170);
+  transition: all 0.2s ease;
+}
+
+.branch-nav-button:hover {
+  background-color: rgba(82, 82, 91, 0.7);
+  color: rgb(244, 244, 245);
+}
+
+.branch-indicator {
+  font-size: 0.75rem;
+  color: rgb(161, 161, 170);
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Message ID badge styles */
+.message-id-badge {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  background-color: rgba(63, 63, 70, 0.5);
+  color: rgb(161, 161, 170);
+}
+
+/* Edited message indicator */
+.edited-indicator {
+  font-size: 0.65rem;
+  font-style: italic;
+  color: rgb(161, 161, 170);
+}
+
+/* Add these CSS rules at the end of the file to ensure text selection works properly */
+
+/* Ensure text selection works properly in messages */
+.prose,
+.prose *,
+.message-container,
+.message-container * {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Prevent selection on specific elements that should not be selectable */
+.copy-button,
+.branch-nav,
+.branch-nav *,
+button {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* Ensure text selection is visible */
+::selection {
+  background: rgba(59, 130, 246, 0.3) !important;
+  color: white !important;
+}
