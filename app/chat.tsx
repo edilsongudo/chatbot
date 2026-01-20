@@ -1411,50 +1411,61 @@ export default function ChatInterface() {
         <div className="sticky bottom-0 left-0 right-0 z-20 p-4 border-t border-zinc-800 bg-zinc-850">
           <form onSubmit={handleSubmit} className="flex justify-center">
             <div className="relative w-full max-w-3xl mx-auto">
-              <textarea
-                value={input}
-                onChange={(e) => {
-                  setInput(e.target.value)
-                  // Mantenha a altura fixa e permita rolagem
-                  const textarea = e.target
-                  textarea.style.height = "46px" // Altura inicial fixa
-                  textarea.style.height = `${Math.min(Math.max(textarea.scrollHeight, 46), 200)}px`
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    if (input.trim() && !isLoading) {
-                      handleSubmit(e)
+              {/* Wrapper: textarea + botões (botões fora do textarea), com centralização vertical quando pequeno, bottom quando grande */}
+              <div className="relative flex w-full items-center">
+                <textarea
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value)
+                    // Mantenha a altura fixa e permita rolagem
+                    const textarea = e.target
+                    textarea.style.height = "46px" // Altura inicial fixa
+                    const newHeight = Math.min(Math.max(textarea.scrollHeight, 46), 200)
+                    textarea.style.height = `${newHeight}px`
+                    setTextareaHeight(newHeight)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault()
+                      if (input.trim() && !isLoading) {
+                        handleSubmit(e)
+                      }
                     }
-                  }
-                }}
-                placeholder="Ask anything"
-                className="w-full bg-[#303030] rounded-3xl px-4 py-3 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md resize-none overflow-y-auto min-h-[46px] max-h-[200px]"
-                disabled={isLoading}
-                rows={1}
-              />
-              <div className="absolute bottom-2 right-2 flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+                  }}
+                  placeholder="Ask anything"
+                  className="w-full bg-[#303030] rounded-3xl px-4 py-3 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md resize-none overflow-y-auto min-h-[46px] max-h-[200px]"
                   disabled={isLoading}
-                >
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-8 w-8 hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md",
-                    isLoading && "animate-spin",
-                  )}
-                  disabled={isLoading || !input.trim()}
-                >
-                  {isLoading ? <Loader2 className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
-                </Button>
+                  rows={1}
+                />
+                <div className={cn(
+                  "absolute right-2 flex gap-2",
+                  textareaHeight === 46 ? "inset-y-0 items-center" : "bottom-2"
+                )}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+                    disabled={isLoading}
+                  >
+                    <Paperclip className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "h-8 w-8 rounded-full transition-all duration-200",
+                      isLoading || !input.trim()
+                        ? "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+                        : "bg-white text-zinc-900 hover:bg-zinc-100",
+                      isLoading && "animate-spin",
+                    )}
+                    disabled={isLoading || !input.trim()}
+                  >
+                    {isLoading ? <Loader2 className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
+                  </Button>
+                </div>
               </div>
             </div>
           </form>
