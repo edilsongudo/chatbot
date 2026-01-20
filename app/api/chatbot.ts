@@ -104,6 +104,10 @@ export async function sendMessage(sessionId: string, message: string, onChunk?: 
                 if (onChunk) {
                   onChunk(JSON.stringify({ status: jsonData.status }))
                 }
+              } else if (jsonData.final) {
+                if (onChunk) {
+                  onChunk(JSON.stringify({ final: jsonData.final }))
+                }
               }
             }
           } catch (e) {
@@ -155,17 +159,26 @@ export async function getChatHistory(sessionId: string) {
       return data.map((msg) => ({
         role: msg.role || (msg.is_user ? "user" : "assistant"),
         content: msg.content || msg.message || "",
+        id: msg.id,
+        parent_id: msg.parent_id,
+        branch_id: msg.branch_id,
       }))
     } else if (data && typeof data === "object") {
       if (Array.isArray(data.messages)) {
         return data.messages.map((msg) => ({
           role: msg.role || (msg.is_user ? "user" : "assistant"),
           content: msg.content || msg.message || "",
+          id: msg.id,
+          parent_id: msg.parent_id,
+          branch_id: msg.branch_id,
         }))
       } else if (data.history && Array.isArray(data.history)) {
         return data.history.map((msg) => ({
           role: msg.role || (msg.is_user ? "user" : "assistant"),
           content: msg.content || msg.message || "",
+          id: msg.id,
+          parent_id: msg.parent_id,
+          branch_id: msg.branch_id,
         }))
       }
     }
@@ -371,6 +384,41 @@ export async function editMessage(messageId: number, newContent: string) {
     return await handleResponse(response)
   } catch (error) {
     console.error("Error editing message:", error)
+    throw error
+  }
+}
+
+/**
+ * Deletes a message
+ */
+export async function deleteMessage(messageId: number) {
+  if (!messageId) {
+    throw new Error("Missing message_id - Cannot delete message without a valid ID")
+  }
+
+  try {
+    console.log(`Deleting message ${messageId}`)
+    const response = await fetch(`${API_BASE_URL}/chat/delete-message/${messageId}/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Error deleting message: ${response.status} ${response.statusText}`, errorText)
+      throw new Error(`Failed to delete message: ${response.status} ${response.statusText}`)
+    }
+
+    // Check if there's no content (204 No Content) or if we should parse JSON
+    if (response.status === 204) {
+      return { success: true }
+    }
+
+    return await handleResponse(response)
+  } catch (error) {
+    console.error("Error deleting message:", error)
     throw error
   }
 }

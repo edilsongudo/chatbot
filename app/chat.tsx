@@ -33,6 +33,7 @@ import {
   deleteChatSession,
   editChatSessionName,
   editMessage,
+  deleteMessage,
 } from "./api/chatbot"
 import { generateTitle } from "./utils/generate-title"
 import { markdownToHtml } from "./utils/markdown-to-html"
@@ -93,6 +94,8 @@ export default function ChatInterface() {
   // Adicione estes novos estados após os estados existentes (por volta da linha 70)
   const [editingMessageIndex, setEditingMessageIndex] = React.useState<number | null>(null)
   const [editingMessageContent, setEditingMessageContent] = React.useState("")
+  const [deleteMessageId, setDeleteMessageId] = React.useState<number | null>(null)
+  const [isDeleteMessageDialogOpen, setIsDeleteMessageDialogOpen] = React.useState(false)
 
   // Add these new state variables after the existing state declarations (around line 70)
   const [currentBranchId, setCurrentBranchId] = React.useState<string | null>(null)
@@ -503,63 +506,55 @@ export default function ChatInterface() {
       // Replace the existing try block in the sendMessage call with this updated version:
       try {
         await sendMessage(activeSessionId, currentInput, (chunk) => {
-          // Check for status update
+          // Try to parse the chunk for control messages (status, final)
           try {
             const parsed = JSON.parse(chunk)
-            if (parsed.status && Object.keys(parsed).length === 1) {
+
+            // Check for status update
+            if (parsed.status) {
               setThinkingStatus(parsed.status)
               return
             }
-          } catch (e) {
-            // Not a status update, continue processing as content
-          }
 
-          // Update the streaming message as chunks arrive
-          setStreamingMessage((prev) => prev + chunk)
+            // Check for final message with IDs
+            if (parsed.final) {
+              const finalData = parsed.final
+              if (finalData.assistant_message_id && finalData.user_message_id) {
+                const assistantId = finalData.assistant_message_id
+                const userId = finalData.user_message_id
 
-          // Try to parse the chunk to extract message IDs
-          try {
-            // Check if the chunk contains the final message with IDs
-            if (chunk.includes('"final"')) {
-              const finalMatch = chunk.match(/"final":\s*({.*?})/)
-              if (finalMatch && finalMatch[1]) {
-                try {
-                  const finalData = JSON.parse(finalMatch[1])
-                  if (finalData.assistant_message_id && finalData.user_message_id) {
-                    const assistantId = finalData.assistant_message_id
-                    const userId = finalData.user_message_id
+                console.log("Captured message IDs:", { userId, assistantId })
 
-                    console.log("Captured message IDs:", { userId, assistantId })
-
-                    // Update message IDs
-                    setMessages((prev) => {
-                      const newMessages = [...prev]
-                      // Find the last user message and set its ID
-                      for (let i = newMessages.length - 1; i >= 0; i--) {
-                        if (newMessages[i].role === "user" && !newMessages[i].id) {
-                          newMessages[i] = { ...newMessages[i], id: userId }
-                          break
-                        }
-                      }
-
-                      // Find the last assistant message and set its ID
-                      for (let i = newMessages.length - 1; i >= 0; i--) {
-                        if (newMessages[i].role === "assistant" && !newMessages[i].id) {
-                          newMessages[i] = { ...newMessages[i], id: assistantId }
-                          break
-                        }
-                      }
-
-                      return newMessages
-                    })
+                // Update message IDs
+                setMessages((prev) => {
+                  const newMessages = [...prev]
+                  // Find the last user message and set its ID
+                  for (let i = newMessages.length - 1; i >= 0; i--) {
+                    if (newMessages[i].role === "user" && !newMessages[i].id) {
+                      newMessages[i] = { ...newMessages[i], id: userId }
+                      break
+                    }
                   }
-                } catch (jsonError) {
-                  console.error("Error parsing final data:", jsonError)
-                }
+
+                  // Find the last assistant message and set its ID
+                  for (let i = newMessages.length - 1; i >= 0; i--) {
+                    if (newMessages[i].role === "assistant" && !newMessages[i].id) {
+                      newMessages[i] = { ...newMessages[i], id: assistantId }
+                      // Also update branch_id if available (assuming it might be in finalData too, or use current)
+                      if (!newMessages[i].branch_id && currentBranchId) {
+                        newMessages[i] = { ...newMessages[i], branch_id: currentBranchId }
+                      }
+                      break
+                    }
+                  }
+
+                  return newMessages
+                })
               }
+              return // Return early to avoid appending JSON to content
             }
-          } catch (parseError) {
-            console.error("Error parsing message IDs from chunk:", parseError)
+          } catch (e) {
+            // Not a control message, continue processing as content
           }
 
           // Update the last message with the accumulated content or create a new one
@@ -976,6 +971,49 @@ export default function ChatInterface() {
     }
   }
 
+  const confirmDeleteMessage = (messageId: number) => {
+    setDeleteMessageId(messageId)
+    setIsDeleteMessageDialogOpen(true)
+  }
+
+  const handleDeleteMessage = async () => {
+    if (!deleteMessageId) {
+      setIsDeleteMessageDialogOpen(false)
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      await deleteMessage(deleteMessageId)
+
+      // Remove the deleted message and all subsequent messages
+      setMessages((prev) => {
+        const index = prev.findIndex((msg) => msg.id === deleteMessageId)
+        if (index !== -1) {
+          // Keep only messages before the deleted one
+          return prev.slice(0, index)
+        }
+        return prev
+      })
+
+      toast({
+        title: "Message deleted",
+        description: "The message and subsequent conversation have been deleted.",
+      })
+    } catch (error) {
+      console.error("Failed to delete message:", error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete message. Please try again.",
+      })
+    } finally {
+      setIsLoading(false)
+      setDeleteMessageId(null)
+      setIsDeleteMessageDialogOpen(false)
+    }
+  }
+
   // Toggle sidebar visibility
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
@@ -1224,7 +1262,7 @@ export default function ChatInterface() {
                       </Avatar>
                       <div className="flex-1 space-y-2 min-w-0">
                         <div className="text-sm text-zinc-400 flex items-center gap-2">
-                          Muse {message.id && `(ID: ${message.id})`}
+                          Muse
                           {message.is_edited && <span className="text-xs text-zinc-500 italic">(edited)</span>}
                         </div>
                         {editingMessageIndex === index ? (
@@ -1272,6 +1310,18 @@ export default function ChatInterface() {
                         {editingMessageIndex !== index && (
                           <div className="flex gap-2 mt-2">
                             <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                confirmDeleteMessage(messageId!)
+                              }}
+                              className={`p-1.5 rounded-md text-zinc-400 hover:text-red-400 hover:bg-zinc-700/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
+                              aria-label="Delete message"
+                              title="Delete message"
+                              disabled={!messageId}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                            <button
                               onClick={() => copyMessageContent(index)}
                               className={`p-1.5 rounded-md ${copiedMessageIndex === index
                                 ? "text-green-400"
@@ -1295,7 +1345,7 @@ export default function ChatInterface() {
                       <div className="user-message">
                         <div className="flex items-start justify-between">
                           <div className="text-sm text-zinc-400 flex items-center gap-2">
-                            Edilson {message.id && `(ID: ${message.id})`}
+                            Edilson
                             {message.is_edited && <span className="text-xs text-zinc-500 italic">(edited)</span>}
                           </div>
                         </div>
@@ -1364,6 +1414,19 @@ export default function ChatInterface() {
                             >
                               <Edit className="h-4 w-4" />
                             </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                confirmDeleteMessage(messageId!)
+                              }}
+                              className={`p-1.5 rounded-md text-zinc-400 hover:text-red-400 hover:bg-zinc-700/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
+                                }`}
+                              aria-label="Delete message"
+                              title="Delete message"
+                              disabled={!messageId}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
 
                             {/* Branch navigation controls */}
                             {hasChildren && branchCount > 1 && (
@@ -1372,7 +1435,7 @@ export default function ChatInterface() {
                                   } transition-all duration-200`}
                               >
                                 <button
-                                  onClick={() => navigateToBranch(messageId, "prev")}
+                                  onClick={() => messageId && navigateToBranch(messageId, "prev")}
                                   className="p-1.5 rounded-md hover:text-zinc-200 hover:bg-zinc-700/50"
                                   aria-label="Previous branch"
                                   title="Previous branch"
@@ -1383,7 +1446,7 @@ export default function ChatInterface() {
                                   {branchIndex}/{branchCount}
                                 </span>
                                 <button
-                                  onClick={() => navigateToBranch(messageId, "next")}
+                                  onClick={() => messageId && navigateToBranch(messageId, "next")}
                                   className="p-1.5 rounded-md hover:text-zinc-200 hover:bg-zinc-700/50"
                                   aria-label="Next branch"
                                   title="Next branch"
@@ -1537,6 +1600,35 @@ export default function ChatInterface() {
                 e.stopPropagation()
                 handleDeleteSession()
               }}
+              className="bg-red-600 text-white hover:bg-red-700 transition-colors duration-200"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Message Confirmation Dialog */}
+      <AlertDialog
+        open={isDeleteMessageDialogOpen}
+        onOpenChange={setIsDeleteMessageDialogOpen}
+      >
+        <AlertDialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Message</AlertDialogTitle>
+            <AlertDialogDescription className="text-zinc-400">
+              Are you sure you want to delete this message? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              className="bg-zinc-800 text-white hover:bg-zinc-700 transition-colors duration-200"
+              onClick={() => setIsDeleteMessageDialogOpen(false)}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteMessage}
               className="bg-red-600 text-white hover:bg-red-700 transition-colors duration-200"
             >
               Delete
