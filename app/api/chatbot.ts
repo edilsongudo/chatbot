@@ -100,6 +100,10 @@ export async function sendMessage(sessionId: string, message: string, onChunk?: 
                 if (onChunk) {
                   onChunk(jsonData.response)
                 }
+              } else if (jsonData.status) {
+                if (onChunk) {
+                  onChunk(JSON.stringify({ status: jsonData.status }))
+                }
               }
             }
           } catch (e) {

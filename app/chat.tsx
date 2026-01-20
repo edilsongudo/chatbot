@@ -79,6 +79,7 @@ export default function ChatInterface() {
   const [isRefreshing, setIsRefreshing] = React.useState(false)
   const [streamingMessage, setStreamingMessage] = React.useState("")
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
+  const [thinkingStatus, setThinkingStatus] = React.useState<string | null>(null)
   const [titleSet, setTitleSet] = React.useState(false)
   const [sessionInitialized, setSessionInitialized] = React.useState(false)
   const [editingSessionId, setEditingSessionId] = React.useState<string | null>(null)
@@ -431,6 +432,7 @@ export default function ChatInterface() {
     const currentInput = input.trim()
     setInput("")
     setStreamingMessage("") // Reset streaming message
+    setThinkingStatus(null) // Reset thinking status
 
     try {
       // Ensure we have a valid session ID before proceeding
@@ -501,6 +503,17 @@ export default function ChatInterface() {
       // Replace the existing try block in the sendMessage call with this updated version:
       try {
         await sendMessage(activeSessionId, currentInput, (chunk) => {
+          // Check for status update
+          try {
+            const parsed = JSON.parse(chunk)
+            if (parsed.status && Object.keys(parsed).length === 1) {
+              setThinkingStatus(parsed.status)
+              return
+            }
+          } catch (e) {
+            // Not a status update, continue processing as content
+          }
+
           // Update the streaming message as chunks arrive
           setStreamingMessage((prev) => prev + chunk)
 
@@ -1398,7 +1411,7 @@ export default function ChatInterface() {
                   <div className="flex-1 space-y-2">
                     <div className="text-sm text-zinc-400">Muse</div>
                     <div className="text-sm leading-relaxed">
-                      <span className="shimmer-text">is thinking...</span>
+                      <span className="shimmer-text">{thinkingStatus || "is thinking..."}</span>
                     </div>
                   </div>
                 </div>
@@ -1459,11 +1472,14 @@ export default function ChatInterface() {
                       isLoading || !input.trim()
                         ? "bg-zinc-700 text-zinc-500 cursor-not-allowed"
                         : "bg-white text-zinc-900 hover:bg-zinc-100",
-                      isLoading && "animate-spin",
                     )}
                     disabled={isLoading || !input.trim()}
                   >
-                    {isLoading ? <Loader2 className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
+                    {isLoading ? (
+                      <span className="h-3 w-3 bg-current rounded-[3px]" aria-hidden="true" />
+                    ) : (
+                      <ArrowUp className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </div>
