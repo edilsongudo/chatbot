@@ -133,7 +133,7 @@ export default function ChatInterface() {
     }
 
     // Carregue as sessões de chat
-    loadChatSessions(hasSessionIdInUrl ? urlSessionId : null)
+    loadChatSessions(hasSessionIdInUrl ? (urlSessionId as string) : null)
   }, [])
 
   // Load chat history when current session changes
@@ -200,7 +200,7 @@ export default function ChatInterface() {
     }
   }, [currentSessionId, sessions])
 
-  const loadChatSessions = async (urlSessionId = null) => {
+  const loadChatSessions = async (urlSessionId: string | null = null) => {
     try {
       setIsLoading(true)
       setIsRefreshing(true)
@@ -324,6 +324,8 @@ export default function ChatInterface() {
       setTitleSet(false)
     } finally {
       setIsLoading(false)
+      // Scroll to bottom when history is loaded
+      setTimeout(scrollToBottom, 50)
     }
   }
 
@@ -476,6 +478,16 @@ export default function ChatInterface() {
 
       // Add the user message to the UI
       setMessages((prev) => [...prev, userMessage])
+
+      // Scroll to top of the new user message
+      setTimeout(() => {
+        const messageContainers = document.querySelectorAll(".message-container")
+        const lastMessage = messageContainers[messageContainers.length - 1]
+        if (lastMessage) {
+          // Use scrollIntoView with block: 'start' to ensure it aligns with the top
+          lastMessage.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+      }, 100)
 
       // Set the title based on the first user message if it hasn't been set yet
       if (!titleSet) {
@@ -763,12 +775,17 @@ export default function ChatInterface() {
   }
 
   const scrollToBottom = React.useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    const messageContainers = document.querySelectorAll(".message-container")
+    const lastMessage = messageContainers[messageContainers.length - 1]
+    if (lastMessage) {
+      lastMessage.scrollIntoView({ behavior: "smooth", block: "end" })
+    } else {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
   }, [])
 
-  React.useEffect(() => {
-    scrollToBottom()
-  }, [scrollToBottom, messages, streamingMessage])
+  // Auto-scroll effect removed as per user request to avoid auto-scrolling during/after responses.
+  // Manual scrolling is now handled in handleSubmit (to top) and loadChatHistory (to bottom).
 
   // Add a useEffect to log when titleSet changes:
   React.useEffect(() => {
@@ -778,9 +795,25 @@ export default function ChatInterface() {
   const handleScroll = React.useCallback(() => {
     if (scrollContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current
-      // Show button if we are more than 200px from the bottom
-      const isNearBottom = scrollHeight - scrollTop - clientHeight < 200
-      setShowScrollButton(!isNearBottom)
+
+      const messageContainers = document.querySelectorAll(".message-container")
+      const lastMessage = messageContainers[messageContainers.length - 1] as HTMLElement
+
+      if (lastMessage) {
+        const containerRect = scrollContainerRef.current.getBoundingClientRect()
+        const lastMessageRect = lastMessage.getBoundingClientRect()
+
+        // Hide button if the last message is anywhere in the viewport
+        const isLastMessageVisible =
+          lastMessageRect.bottom > containerRect.top &&
+          lastMessageRect.top < containerRect.bottom
+
+        setShowScrollButton(!isLastMessageVisible)
+      } else {
+        // Fallback to basic threshold if no messages
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100
+        setShowScrollButton(!isNearBottom)
+      }
     }
   }, [])
 
@@ -1194,7 +1227,7 @@ export default function ChatInterface() {
       )}
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col w-full h-screen overflow-hidden bg-zinc-850">
+      <div className="flex-1 flex flex-col w-full h-screen overflow-hidden bg-zinc-850 relative">
         {/* Top Bar - Fixa em todos os dispositivos */}
         <div className="sticky top-0 z-20 flex items-center h-[60px] px-4 border-b border-zinc-800 bg-zinc-850">
           <div className="flex items-center gap-2">
@@ -1235,9 +1268,9 @@ export default function ChatInterface() {
           className="flex-1 overflow-auto pb-24"
           onScroll={handleScroll}
         >
-          <div className="chat-container py-4 space-y-6 w-full">
+          <div className="chat-container py-4 space-y-1 w-full">
             {messages.length === 0 && (
-              <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+              <div className="flex flex-col items-center justify-center min-h-[55vh] gap-4">
                 <p className="text-zinc-500">
                   {currentSessionId
                     ? "Start a conversation by typing a message below"
@@ -1256,83 +1289,62 @@ export default function ChatInterface() {
               return (
                 <div
                   key={index}
-                  className="flex gap-3 relative py-3 rounded-md message-container"
+                  className="flex gap-3 relative py-1 rounded-md message-container"
                   onMouseEnter={(e) => {
-                    // Only handle hover if we're not in the middle of a selection
                     if (window.getSelection()?.toString() === "") {
                       handleMouseEnter(index)
                     }
                     e.stopPropagation()
                   }}
                   onMouseLeave={(e) => {
-                    // Only handle hover if we're not in the middle of a selection
                     if (window.getSelection()?.toString() === "") {
                       handleMouseLeave()
                     }
                     e.stopPropagation()
                   }}
                   onClick={(e) => {
-                    // Only handle click if it's directly on this element, not on children
-                    // and if we're not in the middle of a selection
                     if (e.target === e.currentTarget && window.getSelection()?.toString() === "") {
                       handleMouseEnter(index)
                     }
-                    // Don't stop propagation here to allow normal click behavior
                   }}
                 >
                   {message.role === "assistant" ? (
-                    <>
-                      <Avatar className="h-8 w-8 overflow-hidden bg-zinc-800 flex-shrink-0">
-                        <SparkLogo />
-                      </Avatar>
-                      <div className="flex-1 space-y-2 min-w-0">
-                        <div className="text-sm text-zinc-400 flex items-center gap-2">
-                          Muse
-                          {message.is_edited && <span className="text-xs text-zinc-500 italic">(edited)</span>}
-                        </div>
-                        {editingMessageIndex === index ? (
-                          // Editing mode content remains the same
-                          <div className="flex flex-col gap-2">
-                            <textarea
-                              value={editingMessageContent}
-                              onChange={(e) => setEditingMessageContent(e.target.value)}
-                              className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              autoFocus
-                            />
-                            <div className="flex gap-2 justify-end">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={cancelEditingMessage}
-                                className="text-zinc-400 hover:text-zinc-200"
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={saveEditedMessage}
-                                className="text-blue-400 hover:text-blue-300"
-                              >
-                                Save
-                              </Button>
-                            </div>
+                    <div className="flex-1 space-y-2 min-w-0">
+                      {editingMessageIndex === index ? (
+                        <div className="flex flex-col gap-2">
+                          <textarea
+                            value={editingMessageContent}
+                            onChange={(e) => setEditingMessageContent(e.target.value)}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            autoFocus
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={cancelEditingMessage}
+                              className="text-zinc-400 hover:text-zinc-200"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={saveEditedMessage}
+                              className="text-blue-400 hover:text-blue-300"
+                            >
+                              Save
+                            </Button>
                           </div>
-                        ) : (
+                        </div>
+                      ) : (
+                        <>
                           <div
                             className="text-base leading-relaxed prose prose-invert max-w-none select-text"
                             dangerouslySetInnerHTML={{ __html: markdownToHtml(message.content) }}
-                            onClick={(e) => {
-                              // Don't do anything on click to allow text selection
-                              e.stopPropagation()
-                            }}
-                            onMouseDown={(e) => {
-                              // Prevent any default behavior that might interfere with selection
-                              e.stopPropagation()
-                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
                           />
-                        )}
-                        {editingMessageIndex !== index && (
                           <div className="flex gap-2 mt-2">
                             <button
                               onClick={(e) => {
@@ -1362,9 +1374,9 @@ export default function ChatInterface() {
                               )}
                             </button>
                           </div>
-                        )}
-                      </div>
-                    </>
+                        </>
+                      )}
+                    </div>
                   ) : (
                     <div className="flex-1 space-y-2 min-w-0">
                       <div className="user-message flex flex-col items-end w-full ml-auto">
@@ -1483,11 +1495,7 @@ export default function ChatInterface() {
               messages.length > 0 &&
               messages[messages.length - 1].role !== "assistant" && (
                 <div className="flex gap-3">
-                  <Avatar className="h-8 w-8 overflow-hidden bg-zinc-800">
-                    <SparkLogo />
-                  </Avatar>
                   <div className="flex-1 space-y-2">
-                    <div className="text-sm text-zinc-400">Muse</div>
                     <div className="text-sm leading-relaxed">
                       {thinkingStatus ? (
                         <span className="shimmer-text">{thinkingStatus}</span>
@@ -1498,23 +1506,26 @@ export default function ChatInterface() {
                   </div>
                 </div>
               )}
+            {/* Spacer to allow scrolling the last message to the top */}
+            <div className="h-[55vh]" />
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Scroll to Bottom Button */}
-          {showScrollButton && (
-            <div className="fixed bottom-24 right-8 z-30 animate-in fade-in slide-in-from-bottom-4 duration-300">
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={scrollToBottom}
-                className="h-10 w-10 rounded-full bg-zinc-800/90 border border-zinc-700 text-zinc-100 hover:bg-zinc-700 shadow-lg backdrop-blur-sm"
-              >
-                <ChevronDown className="h-5 w-5" />
-              </Button>
-            </div>
-          )}
         </div>
+
+        {/* Scroll to Bottom Button - Fixed position relative to chat area */}
+        {showScrollButton && (
+          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={scrollToBottom}
+              className="h-10 w-10 rounded-full bg-zinc-800/90 border border-zinc-700 text-zinc-100 hover:bg-zinc-700 shadow-lg backdrop-blur-sm"
+            >
+              <ChevronDown className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
 
         {/* Input Area - Fixa na parte inferior em todos os dispositivos */}
         <div className="sticky bottom-0 left-0 right-0 z-20 p-4 border-t border-zinc-800 bg-zinc-850">
@@ -1669,6 +1680,6 @@ export default function ChatInterface() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </div >
   )
 }
