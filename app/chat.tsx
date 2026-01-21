@@ -17,6 +17,7 @@ import {
   MoreHorizontal,
   Menu,
   X,
+  ChevronDown,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/ui/avatar"
@@ -103,6 +104,8 @@ export default function ChatInterface() {
   const [branches, setBranches] = React.useState<{ [parentId: string]: string[] }>({})
   const [branchIndices, setBranchIndices] = React.useState<{ [branchId: string]: number }>({})
   const [messageIds, setMessageIds] = React.useState<{ [index: number]: number }>({})
+  const [showScrollButton, setShowScrollButton] = React.useState(false)
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null)
 
   // Media queries para responsividade
   const isMobile = useMediaQuery("(max-width: 768px)")
@@ -772,6 +775,23 @@ export default function ChatInterface() {
     console.log("titleSet changed:", titleSet)
   }, [titleSet])
 
+  const handleScroll = React.useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current
+      // Show button if we are more than 200px from the bottom
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 200
+      setShowScrollButton(!isNearBottom)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    const scrollContainer = scrollContainerRef.current
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll)
+      return () => scrollContainer.removeEventListener("scroll", handleScroll)
+    }
+  }, [handleScroll])
+
   // Function to get plain text content from messages (for copying)
   const getPlainTextContent = (message: Message) => {
     if (message.role === "assistant") {
@@ -1210,7 +1230,11 @@ export default function ChatInterface() {
 
 
         {/* Chat Messages - com padding para evitar que o conteúdo fique sob o input fixo */}
-        <div className="flex-1 overflow-auto pb-24">
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-auto pb-24"
+          onScroll={handleScroll}
+        >
           <div className="chat-container py-4 space-y-6 w-full">
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
@@ -1476,6 +1500,20 @@ export default function ChatInterface() {
               )}
             <div ref={messagesEndRef} />
           </div>
+
+          {/* Scroll to Bottom Button */}
+          {showScrollButton && (
+            <div className="fixed bottom-24 right-8 z-30 animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={scrollToBottom}
+                className="h-10 w-10 rounded-full bg-zinc-800/90 border border-zinc-700 text-zinc-100 hover:bg-zinc-700 shadow-lg backdrop-blur-sm"
+              >
+                <ChevronDown className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Input Area - Fixa na parte inferior em todos os dispositivos */}
