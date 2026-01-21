@@ -1232,7 +1232,7 @@ export default function ChatInterface() {
               return (
                 <div
                   key={index}
-                  className="flex gap-3 relative p-3 rounded-md message-container"
+                  className="flex gap-3 relative py-3 rounded-md message-container"
                   onMouseEnter={(e) => {
                     // Only handle hover if we're not in the middle of a selection
                     if (window.getSelection()?.toString() === "") {
@@ -1343,21 +1343,10 @@ export default function ChatInterface() {
                     </>
                   ) : (
                     <div className="flex-1 space-y-2 min-w-0">
-                      <div className="user-message">
-                        <div className="flex items-start justify-between">
-                          <div className="text-sm text-zinc-400 flex items-center gap-2">
-                            Edilson
-                            {message.is_edited && <span className="text-xs text-zinc-500 italic">(edited)</span>}
-                          </div>
-                        </div>
-                        <div className="flex items-start mt-2 gap-3">
-                          <div className="user-avatar-container">
-                            <Avatar className="h-8 w-8 overflow-hidden bg-zinc-800 flex-shrink-0 rounded-full">
-                              <UserAvatar />
-                            </Avatar>
-                          </div>
+                      <div className="user-message flex flex-col items-end w-full ml-auto">
+                        <div className="flex items-start mt-2 gap-3 justify-end w-full">
                           {editingMessageIndex === index ? (
-                            <div className="flex-1 flex flex-col gap-2">
+                            <div className="flex-1 flex flex-col gap-2 max-w-[70%]">
                               <textarea
                                 value={editingMessageContent}
                                 onChange={(e) => setEditingMessageContent(e.target.value)}
@@ -1384,13 +1373,14 @@ export default function ChatInterface() {
                               </div>
                             </div>
                           ) : (
-                            <div className="text-base leading-relaxed whitespace-pre-wrap bg-zinc-800 p-4 rounded-lg user-message-bubble">
+                            <div className="text-base leading-relaxed whitespace-pre-wrap bg-zinc-800 p-4 rounded-lg user-message-bubble max-w-[85%] text-left">
                               {message.content}
                             </div>
                           )}
                         </div>
                         {editingMessageIndex !== index && (
-                          <div className="flex gap-2 mt-2 ml-11">
+                          <div className="flex gap-2 mt-2 mr-1">
+                            {message.is_edited && <span className="text-xs text-zinc-500 italic flex items-center mr-2">(edited)</span>}
                             <button
                               onClick={() => copyMessageContent(index)}
                               className={`p-1.5 rounded-md ${copiedMessageIndex === index

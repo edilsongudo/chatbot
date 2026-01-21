@@ -43,8 +43,8 @@ body {
 
 /* Modifique a classe chat-container para centralizar todo o conteúdo da conversa */
 .chat-container {
-  max-width: 900px;
-  /* Largura máxima do container da conversa */
+  max-width: 48rem;
+  /* Largura máxima do container da conversa (768px - max-w-3xl) */
   margin: 0 auto;
   width: 100%;
   padding: 0 16px;
@@ -395,7 +395,7 @@ textarea.resize-none::-webkit-scrollbar-thumb:hover {
 .user-message-bubble {
   background-color: var(--user-message-bg);
   border-radius: 1rem;
-  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
 }
 
 /* User avatar container */
@@ -705,10 +705,12 @@ button:hover {
     transform: scale(0.8);
     opacity: 0.5;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 1;
   }
+
   100% {
     transform: scale(0.8);
     opacity: 0.5;

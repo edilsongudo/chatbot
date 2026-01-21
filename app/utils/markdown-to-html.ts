@@ -10,8 +10,16 @@ export function markdownToHtml(markdown: string): string {
   if (!markdown) return ""
 
   try {
+    // Configure custom renderer for links
+    const renderer = new marked.Renderer()
+    renderer.link = (href, title, text) => {
+      const link = marked.Renderer.prototype.link.call(renderer, href, title, text)
+      return link.replace("<a", '<a target="_blank" rel="noopener noreferrer"')
+    }
+
     // Configure marked for code highlighting without highlight.js
     marked.setOptions({
+      renderer, // Use custom renderer
       breaks: true, // Convert line breaks to <br>
       gfm: true, // Enable GitHub Flavored Markdown
       headerIds: true, // Generate IDs for headers
@@ -67,7 +75,7 @@ export function markdownToHtml(markdown: string): string {
         "span",
         "img",
       ],
-      ALLOWED_ATTR: ["href", "name", "target", "class", "id", "style", "src", "alt", "title", "language"],
+      ALLOWED_ATTR: ["href", "name", "target", "class", "id", "style", "src", "alt", "title", "language", "rel"],
       ALLOW_DATA_ATTR: true,
     }
 
