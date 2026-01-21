@@ -48,6 +48,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { ThinkingAnimation } from "./components/ThinkingAnimation"
 import { UserAvatar } from "./components/user-avatar"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { CodeHighlighter } from "./components/code-highlighter"
@@ -1474,7 +1475,11 @@ export default function ChatInterface() {
                   <div className="flex-1 space-y-2">
                     <div className="text-sm text-zinc-400">Muse</div>
                     <div className="text-sm leading-relaxed">
-                      <span className="shimmer-text">{thinkingStatus || "is thinking..."}</span>
+                      {thinkingStatus ? (
+                        <span className="shimmer-text">{thinkingStatus}</span>
+                      ) : (
+                        <ThinkingAnimation />
+                      )}
                     </div>
                   </div>
                 </div>
