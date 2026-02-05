@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8002/ai"
+const API_BASE_URL = "https://brilliantsaas.com/ai"
 
 /**
  * Handles API response and checks for errors

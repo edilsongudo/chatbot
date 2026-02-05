@@ -32,6 +32,8 @@ body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
   font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  /* Explicitly set to normal weight */
 }
 
 /* Remova ou modifique a classe message-content para não centralizar o conteúdo individualmente */
@@ -78,24 +80,24 @@ body {
 }
 
 .prose h1 {
-  @apply text-2xl font-bold text-white mb-4 mt-6 pb-1 border-b border-zinc-700;
+  @apply text-2xl font-semibold text-white mb-4 mt-6 pb-1 border-b border-zinc-700;
 }
 
 .prose h2 {
-  @apply text-xl font-bold text-white mb-3 mt-5 pb-1 border-b border-zinc-800;
+  @apply text-xl font-semibold text-white mb-3 mt-5 pb-1 border-b border-zinc-800;
 }
 
 .prose h3 {
-  @apply text-lg font-bold text-white mb-3 mt-4;
+  @apply text-lg font-semibold text-white mb-3 mt-4;
 }
 
 .prose h4 {
-  @apply text-base font-bold text-white mb-2 mt-4;
+  @apply text-base font-semibold text-white mb-2 mt-4;
 }
 
 .prose h5,
 .prose h6 {
-  @apply font-bold text-white mb-2 mt-3;
+  @apply font-semibold text-white mb-2 mt-3;
 }
 
 .prose ul {
@@ -152,7 +154,7 @@ body {
 }
 
 .prose th {
-  @apply bg-zinc-800 text-left p-2 border border-zinc-700 font-bold;
+  @apply bg-zinc-800 text-left p-2 border border-zinc-700 font-semibold;
 }
 
 .prose td {
@@ -171,7 +173,7 @@ body {
 
 .prose strong,
 .prose b {
-  @apply font-bold text-white;
+  @apply font-semibold text-white;
 }
 
 .prose em,

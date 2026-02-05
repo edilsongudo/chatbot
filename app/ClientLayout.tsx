@@ -11,7 +11,10 @@ import { LoadingScreen } from "./components/loading-screen"
 // Remove the highlight.js import
 import { FaviconHandler } from "./components/favicon-handler"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+})
 
 export default function ClientLayout({
   children,
