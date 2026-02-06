@@ -1,4 +1,6 @@
-const API_BASE_URL = "https://brilliantsaas.com/ai"
+import { API_BASE_URL as BASE_URL } from "@/lib/config"
+
+const API_BASE_URL = `${BASE_URL}/ai`
 
 /**
  * Handles API response and checks for errors
@@ -21,15 +23,32 @@ async function handleResponse(response: Response) {
 }
 
 /**
+ * Helper function to get headers with authentication token
+ */
+function getAuthHeaders(): HeadersInit {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  }
+
+  // Check for auth token in localStorage (client-side only)
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("auth_token")
+    if (token) {
+      headers["Authorization"] = `Token ${token}`
+    }
+  }
+
+  return headers
+}
+
+/**
  * Creates a new chat session and returns the session_id
  */
 export async function createChatSession() {
   try {
     const response = await fetch(`${API_BASE_URL}/chatbot/create/`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
     })
     return handleResponse(response)
   } catch (error) {
@@ -51,9 +70,7 @@ export async function sendMessage(sessionId: string, message: string, onChunk?: 
 
     const response = await fetch(`${API_BASE_URL}/`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         session_id: sessionId,
         message: message,
@@ -90,7 +107,7 @@ export async function sendMessage(sessionId: string, message: string, onChunk?: 
         console.log("Received chunk:", chunk)
 
         // Parse SSE format (data: {"response": "text"})
-        const matches = chunk.matchAll(/data: (.*?)(?:\n\n|$)/gs)
+        const matches = chunk.matchAll(/data: ([\s\S]*?)(?:\n\n|$)/g)
         for (const match of matches) {
           try {
             if (match[1]) {
@@ -140,9 +157,7 @@ export async function getChatHistory(sessionId: string) {
     console.log(`Getting chat history for session ${sessionId}`)
     const response = await fetch(`${API_BASE_URL}/history/${sessionId}/`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
     })
 
     if (!response.ok) {
@@ -156,7 +171,7 @@ export async function getChatHistory(sessionId: string) {
 
     // Transform the data into the expected format if needed
     if (Array.isArray(data)) {
-      return data.map((msg) => ({
+      return data.map((msg: any) => ({
         role: msg.role || (msg.is_user ? "user" : "assistant"),
         content: msg.content || msg.message || "",
         id: msg.id,
@@ -165,7 +180,7 @@ export async function getChatHistory(sessionId: string) {
       }))
     } else if (data && typeof data === "object") {
       if (Array.isArray(data.messages)) {
-        return data.messages.map((msg) => ({
+        return data.messages.map((msg: any) => ({
           role: msg.role || (msg.is_user ? "user" : "assistant"),
           content: msg.content || msg.message || "",
           id: msg.id,
@@ -173,7 +188,7 @@ export async function getChatHistory(sessionId: string) {
           branch_id: msg.branch_id,
         }))
       } else if (data.history && Array.isArray(data.history)) {
-        return data.history.map((msg) => ({
+        return data.history.map((msg: any) => ({
           role: msg.role || (msg.is_user ? "user" : "assistant"),
           content: msg.content || msg.message || "",
           id: msg.id,
@@ -199,9 +214,7 @@ export async function getChatSessions() {
     console.log("Fetching chat sessions from API")
     const response = await fetch(`${API_BASE_URL}/chat_sessions/`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
     })
 
     if (!response.ok) {
@@ -215,21 +228,21 @@ export async function getChatSessions() {
 
     // Handle different response formats
     if (Array.isArray(data)) {
-      return data.map((session) => ({
+      return data.map((session: any) => ({
         id: session.id || session.session_id,
         title: session.title || session.name || `Chat ${(session.id || session.session_id || "").slice(0, 8)}`,
       }))
     } else if (data && typeof data === "object") {
       if (Array.isArray(data.sessions)) {
         return {
-          sessions: data.sessions.map((session) => ({
+          sessions: data.sessions.map((session: any) => ({
             id: session.id || session.session_id,
             title: session.title || session.name || `Chat ${(session.id || session.session_id || "").slice(0, 8)}`,
           })),
         }
       } else if (data.chat_sessions && Array.isArray(data.chat_sessions)) {
         return {
-          sessions: data.chat_sessions.map((session) => ({
+          sessions: data.chat_sessions.map((session: any) => ({
             id: session.id || session.session_id,
             title: session.title || session.name || `Chat ${(session.id || session.session_id || "").slice(0, 8)}`,
           })),
@@ -259,9 +272,7 @@ export async function deleteChatSession(sessionId: string) {
     // Usando POST em vez de DELETE, com um parâmetro action=delete
     const response = await fetch(`${API_BASE_URL}/chat/delete/${sessionId}/`, {
       method: "POST", // Alterado de DELETE para POST
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         action: "delete", // Adicionando um parâmetro de ação para indicar a intenção
       }),
@@ -292,9 +303,7 @@ export async function deleteChatSessionAlt(sessionId: string) {
     console.log(`Deleting chat session ${sessionId} (alternative method)`)
     const response = await fetch(`${API_BASE_URL}/`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         session_id: sessionId,
         action: "delete_session",
@@ -330,9 +339,7 @@ export async function editChatSessionName(sessionId: string, newName: string) {
     console.log(`Editing chat session ${sessionId} name to "${newName}"`)
     const response = await fetch(`${API_BASE_URL}/chat/edit/${sessionId}/`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         name: newName.trim(),
       }),
@@ -367,9 +374,7 @@ export async function editMessage(messageId: number, newContent: string) {
     console.log(`Editing message ${messageId} with new content`)
     const response = await fetch(`${API_BASE_URL}/chat/edit-message/${messageId}/`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         content: newContent.trim(),
       }),
@@ -400,9 +405,7 @@ export async function deleteMessage(messageId: number) {
     console.log(`Deleting message ${messageId}`)
     const response = await fetch(`${API_BASE_URL}/chat/delete-message/${messageId}/`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
     })
 
     if (!response.ok) {

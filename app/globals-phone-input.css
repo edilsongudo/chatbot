@@ -1,0 +1,76 @@
+/* Phone Input Custom Styles - Robust Overrides */
+.PhoneInput {
+  display: flex !important;
+  align-items: center !important;
+  background-color: #18181b !important;
+  border: 1px solid rgb(63, 63, 70) !important;
+  border-radius: 0.5rem !important;
+  padding-left: 12px;
+  height: 44px !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.PhoneInput:focus-within {
+  outline: 2px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  border-color: #6366f1 !important;
+}
+
+.PhoneInputInput {
+  flex: 1 !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: white !important;
+  height: 100% !important;
+  outline: none !important;
+  padding-left: 12px !important;
+  font-size: 14px !important;
+  min-width: 0 !important;
+}
+
+.PhoneInputInput::placeholder {
+  color: rgb(113, 113, 122) !important;
+  opacity: 1 !important;
+}
+
+/* Country Selector Styling */
+.PhoneInputCountry {
+  display: flex !important;
+  align-items: center !important;
+  margin-right: 0 !important;
+  padding-right: 8px !important;
+  border-right: 1px solid rgb(63, 63, 70) !important;
+  height: 24px !important;
+}
+
+.PhoneInputCountryIcon {
+  width: 24px !important;
+  height: 16px !important;
+  border-radius: 2px !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+.PhoneInputCountrySelect {
+  display: none !important;
+  /* Hide native select if custom dropdown is used, or style it if needed */
+  /* If using native select opacity 0 method: */
+  /* appearance: none; */
+  /* position: absolute; */
+  /* top: 0; left: 0; height: 100%; width: 100%; */
+  /* z-index: 1; */
+  /* opacity: 0; */
+}
+
+/* Arrow styling if present */
+.PhoneInputCountrySelectArrow {
+  display: block !important;
+  content: '' !important;
+  width: 0.3em !important;
+  height: 0.3em !important;
+  margin-left: 0.3em !important;
+  border-right-width: 1px !important;
+  border-bottom-width: 1px !important;
+  transform: rotate(45deg) !important;
+  opacity: 0.45 !important;
+  color: inherit !important;
+}

@@ -18,6 +18,11 @@ import {
   Menu,
   X,
   ChevronDown,
+  LogOut,
+  Settings,
+  CreditCard,
+  User,
+  HelpCircle,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/ui/avatar"
@@ -38,7 +43,9 @@ import {
 } from "./api/chatbot"
 import { generateTitle } from "./utils/generate-title"
 import { markdownToHtml } from "./utils/markdown-to-html"
+
 import { Input } from "@/components/ui/input"
+import { API_BASE_URL } from "@/lib/config"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -110,6 +117,45 @@ export default function ChatInterface() {
   const [messageIds, setMessageIds] = React.useState<{ [index: number]: number }>({})
   const [showScrollButton, setShowScrollButton] = React.useState(false)
   const scrollContainerRef = React.useRef<HTMLDivElement>(null)
+
+  const [userInfo, setUserInfo] = React.useState<{ email: string; first_name?: string; last_name?: string } | null>(null)
+
+  // Load user info from localStorage
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem("user_info")
+    if (storedUser) {
+      try {
+        setUserInfo(JSON.parse(storedUser))
+      } catch (e) {
+        console.error("Failed to parse user info", e)
+      }
+    }
+  }, [])
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("auth_token")
+      if (token) {
+        await fetch(`${API_BASE_URL}/users/api/auth/logout/`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Token ${token}`,
+            "Content-Type": "application/json"
+          }
+        })
+      }
+    } catch (error) {
+      console.error("Logout error", error)
+    } finally {
+      // Clear local storage and cookies
+      localStorage.removeItem("auth_token")
+      localStorage.removeItem("user_info")
+      document.cookie = "auth_token=; path=/; max-age=0"
+
+      // Redirect to login
+      window.location.href = "/login"
+    }
+  }
 
   // Media queries para responsividade
   const isMobile = useMediaQuery("(max-width: 768px)")
@@ -1226,6 +1272,63 @@ export default function ChatInterface() {
               {isLoading ? "Loading sessions..." : "No chat sessions found"}
             </div>
           )}
+        </div>
+
+        {/* User Profile Section */}
+        <div className="px-2 py-4 border-t border-zinc-800">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-zinc-800 transition-colors duration-200 group text-left outline-none">
+                <div className="w-8 h-8 flex-shrink-0 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-medium text-emerald-500 bg-emerald-500/10">
+                  {userInfo?.first_name ? userInfo.first_name[0].toUpperCase() : (userInfo?.email?.[0].toUpperCase() || "U")}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-zinc-200 group-hover:text-white truncate">
+                    {userInfo?.first_name || userInfo?.last_name
+                      ? `${userInfo.first_name || ''} ${userInfo.last_name || ''}`.trim()
+                      : (userInfo?.email?.split('@')[0] || "User")}
+                  </p>
+                </div>
+                <MoreHorizontal className="w-4 h-4 text-zinc-500 group-hover:text-zinc-300" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64 bg-zinc-900 border-zinc-800 text-zinc-200 p-1.5 shadow-xl mb-2 ml-4">
+              <div className="flex items-center gap-3 p-2 mb-1 rounded-sm">
+                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-medium text-emerald-500 bg-emerald-500/10">
+                  {userInfo?.first_name ? userInfo.first_name[0].toUpperCase() : (userInfo?.email?.[0].toUpperCase() || "U")}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">
+                    {userInfo?.first_name || userInfo?.last_name
+                      ? `${userInfo.first_name || ''} ${userInfo.last_name || ''}`.trim()
+                      : (userInfo?.email?.split('@')[0] || "User")}
+                  </p>
+                  <p className="text-xs text-zinc-500 truncate">{userInfo?.email || "user"}</p>
+                </div>
+              </div>
+              <div className="h-px bg-zinc-800 my-1.5 mx-2" />
+              <DropdownMenuItem className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer">
+                <CreditCard className="w-4 h-4 mr-2" />
+                Upgrade plan
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer">
+                <User className="w-4 h-4 mr-2" />
+                Personalization
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer">
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </DropdownMenuItem>
+              <div className="h-px bg-zinc-800 my-1.5 mx-2" />
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

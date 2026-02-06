@@ -1,0 +1,179 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Play } from "lucide-react"
+import { Input } from "@/app/components/ui/input"
+import { API_BASE_URL } from "@/lib/config"
+import Link from "next/link"
+import PhoneInput from "react-phone-number-input"
+import "react-phone-number-input/style.css"
+
+export default function Signup() {
+    const [firstName, setFirstName] = useState("")
+    const [email, setEmail] = useState("")
+    const [phoneNumber, setPhoneNumber] = useState("")
+    const [password, setPassword] = useState("")
+    const [passwordConfirm, setPasswordConfirm] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
+    const router = useRouter()
+
+    const handleSignup = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
+        setError("")
+
+        if (password !== passwordConfirm) {
+            setError("Passwords do not match")
+            setLoading(false)
+            return
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/users/api/auth/signup/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+                body: JSON.stringify({
+                    first_name: firstName,
+                    email,
+                    phone_number: phoneNumber,
+                    password,
+                    password_confirm: passwordConfirm,
+                }),
+            })
+
+            if (!res.ok) {
+                const text = await res.text()
+                try {
+                    const json = JSON.parse(text)
+                    // Try to extract a meaningful error message from Django/DRF response
+                    const errorMsg = Object.values(json).flat().join(", ") || "Registration failed"
+                    throw new Error(errorMsg)
+                } catch {
+                    throw new Error("Registration failed. Please check your inputs.")
+                }
+            }
+
+            const data = await res.json()
+
+            // Store token and user info (Auto-login)
+            if (data.token) {
+                document.cookie = `auth_token=${data.token}; path=/; max-age=86400` // 1 day
+                localStorage.setItem("auth_token", data.token)
+            }
+
+            if (data.user) {
+                localStorage.setItem("user_info", JSON.stringify(data.user))
+            }
+
+            // Handle success - redirect to home
+            router.push("/")
+        } catch (err: any) {
+            setError(err.message || "Failed to sign up.")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-[#212121] text-[#B2B2B2]">
+            <div className="w-full max-w-[400px] bg-[#2c2c2e] p-8 rounded-xl shadow-2xl border border-zinc-800/50">
+                <div className="flex flex-col items-center mb-8">
+                    <div className="w-12 h-12 bg-[#6366f1] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/20">
+                        <Play className="w-6 h-6 text-white fill-white ml-1" />
+                    </div>
+                    <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
+                    <p className="text-sm text-zinc-400 text-center">
+                        Sign up to get started
+                    </p>
+                </div>
+
+                <form onSubmit={handleSignup} className="space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white ml-1">First Name</label>
+                        <Input
+                            type="text"
+                            placeholder="Your Name"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="bg-[#18181b] border-zinc-700 text-white placeholder:text-zinc-500 rounded-lg h-11 focus-visible:ring-indigo-500"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white ml-1">Email</label>
+                        <Input
+                            type="email"
+                            placeholder="name@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="bg-[#18181b] border-zinc-700 text-white placeholder:text-zinc-500 rounded-lg h-11 focus-visible:ring-indigo-500"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white ml-1">Phone Number</label>
+                        <PhoneInput
+                            placeholder="Enter phone number"
+                            value={phoneNumber}
+                            onChange={(value) => setPhoneNumber(value || "")}
+                            defaultCountry="US"
+                            className="bg-[#18181b] border-zinc-700 text-white rounded-lg h-11 focus-visible:ring-indigo-500"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white ml-1">Password</label>
+                        <Input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="bg-[#18181b] border-zinc-700 text-white placeholder:text-zinc-500 rounded-lg h-11 focus-visible:ring-indigo-500"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-white ml-1">Confirm Password</label>
+                        <Input
+                            type="password"
+                            value={passwordConfirm}
+                            onChange={(e) => setPasswordConfirm(e.target.value)}
+                            className="bg-[#18181b] border-zinc-700 text-white placeholder:text-zinc-500 rounded-lg h-11 focus-visible:ring-indigo-500"
+                            required
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="text-red-400 text-sm text-center bg-red-400/10 p-2 rounded">
+                            {error}
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-white text-black font-semibold h-11 rounded-lg mt-6 hover:bg-gray-100 transition-colors disabled:opacity-70 disabled:cursor-not-allowed text-sm"
+                    >
+                        {loading ? "Creating account..." : "Sign up"}
+                    </button>
+
+                    <div className="text-center mt-4">
+                        <p className="text-sm text-zinc-400">
+                            Already have an account?{" "}
+                            <Link href="/login" className="text-indigo-400 hover:text-indigo-300 hover:underline">
+                                Sign in
+                            </Link>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    )
+}

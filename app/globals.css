@@ -801,3 +801,88 @@ button {
   background: rgba(59, 130, 246, 0.3) !important;
   color: white !important;
 }
+
+
+
+/* Phone Input Custom Styles - Robust Overrides */
+.PhoneInput {
+  display: flex !important;
+  align-items: center !important;
+  background-color: #18181b !important;
+  border: 1px solid rgb(63, 63, 70) !important;
+  border-radius: 0.5rem !important;
+  padding-left: 12px;
+  height: 44px !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.PhoneInput:focus-within {
+  outline: 2px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  border-color: #6366f1 !important;
+}
+
+.PhoneInputInput {
+  flex: 1 !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: white !important;
+  height: 100% !important;
+  outline: none !important;
+  padding-left: 12px !important;
+  font-size: 14px !important;
+  min-width: 0 !important;
+}
+
+.PhoneInputInput::placeholder {
+  color: rgb(113, 113, 122) !important;
+  opacity: 1 !important;
+}
+
+/* Country Selector Styling */
+.PhoneInputCountry {
+  display: flex !important;
+  align-items: center !important;
+  margin-right: 0 !important;
+  /* Reset margin */
+  padding-right: 12px !important;
+  /* Add padding for visual separation */
+  position: relative !important;
+  /* For absolute select positioning */
+  align-self: stretch !important;
+  /* Full height */
+}
+
+.PhoneInputCountryIcon {
+  width: 24px !important;
+  height: 16px !important;
+  border-radius: 2px !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  display: block !important;
+  /* Ensure it's not hidden */
+}
+
+/* Make the select cover the country icon for clickability */
+.PhoneInputCountrySelect {
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  z-index: 1 !important;
+  opacity: 0 !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  /* Remove native appearance */
+}
+
+/* Add a visual border to separate country code from input */
+.PhoneInputCountry {
+  border-right: 1px solid rgb(63, 63, 70) !important;
+}
+
+/* Arrow styling - hide it as we want a cleaner look, or style it if needed */
+.PhoneInputCountrySelectArrow {
+  display: none !important;
+}
