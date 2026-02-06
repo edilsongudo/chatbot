@@ -99,6 +99,10 @@ export default function ChatInterface() {
   const [deleteMessageId, setDeleteMessageId] = React.useState<number | null>(null)
   const [isDeleteMessageDialogOpen, setIsDeleteMessageDialogOpen] = React.useState(false)
 
+  // State to control bottom spacer visibility
+  // It should be hidden on load (false) and shown when sending new messages (true)
+  const [shouldShowSpacer, setShouldShowSpacer] = React.useState(false)
+
   // Add these new state variables after the existing state declarations (around line 70)
   const [currentBranchId, setCurrentBranchId] = React.useState<string | null>(null)
   const [branches, setBranches] = React.useState<{ [parentId: string]: string[] }>({})
@@ -324,6 +328,8 @@ export default function ChatInterface() {
       setTitleSet(false)
     } finally {
       setIsLoading(false)
+      // Hide spacer when loading history
+      setShouldShowSpacer(false)
       // Scroll to bottom when history is loaded
       setTimeout(scrollToBottom, 50)
     }
@@ -442,6 +448,8 @@ export default function ChatInterface() {
     setInput("")
     setStreamingMessage("") // Reset streaming message
     setThinkingStatus(null) // Reset thinking status
+    // Enable spacer for new messages to allow scrolling to top
+    setShouldShowSpacer(true)
 
     try {
       // Ensure we have a valid session ID before proceeding
@@ -1506,8 +1514,8 @@ export default function ChatInterface() {
                   </div>
                 </div>
               )}
-            {/* Spacer to allow scrolling the last message to the top */}
-            <div className="h-[55vh]" />
+            {/* Spacer to allow scrolling the last message to the top - only shown when needed */}
+            <div className={`transition-[height] duration-300 ${shouldShowSpacer ? "h-[85vh]" : "h-0"}`} />
             <div ref={messagesEndRef} />
           </div>
 
