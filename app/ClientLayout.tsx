@@ -10,8 +10,9 @@ import { Toaster } from "@/components/ui/toaster"
 import { LoadingScreen } from "./components/loading-screen"
 // Remove the highlight.js import
 import { FaviconHandler } from "./components/favicon-handler"
+import { SettingsProvider } from "./context/settings-context"
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 })
@@ -38,13 +39,15 @@ export default function ClientLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Head>
-          <link rel="icon" href="https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png" />
-        </Head>
-        <LoadingScreen />
-        <FaviconHandler />
-        {children}
-        <Toaster />
+        <SettingsProvider>
+          <Head>
+            <link rel="icon" href="https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png" />
+          </Head>
+          <LoadingScreen />
+          <FaviconHandler />
+          {children}
+          <Toaster />
+        </SettingsProvider>
       </body>
     </html>
   )

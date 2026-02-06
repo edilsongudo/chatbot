@@ -9,8 +9,10 @@ import { Input } from "@/app/components/ui/input"
 
 import { API_BASE_URL } from "@/lib/config"
 import Link from "next/link"
+import { useSettings } from "@/app/context/settings-context"
 
 export default function Login() {
+    const { settings } = useSettings()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
@@ -63,10 +65,14 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-[#212121] text-[#B2B2B2]">
             <div className="w-full max-w-[400px] bg-[#2c2c2e] p-8 rounded-xl shadow-2xl border border-zinc-800/50">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-12 h-12 bg-[#6366f1] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/20">
-                        <Play className="w-6 h-6 text-white fill-white ml-1" />
+                    <div className="w-16 h-16 bg-[#6366f1] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/20 overflow-hidden">
+                        {settings?.logo_url ? (
+                            <img src={settings.logo_url} alt={settings.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <Play className="w-6 h-6 text-white fill-white ml-1" />
+                        )}
                     </div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Welcome back</h1>
+                    <h1 className="text-2xl font-bold text-white mb-2">Welcome to {settings?.name || "Muse"}</h1>
                     <p className="text-sm text-zinc-400 text-center">
                         Enter your credentials to access your dashboard
                     </p>

@@ -3,6 +3,25 @@ import { API_BASE_URL as BASE_URL } from "@/lib/config"
 const API_BASE_URL = `${BASE_URL}/ai`
 
 /**
+ * Fetches application settings (name, logo_url)
+ */
+export async function getSettings() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/settings/`, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+      },
+    })
+    return handleResponse(response)
+  } catch (error) {
+    console.error("Error fetching settings:", error)
+    throw error
+  }
+}
+
+
+/**
  * Handles API response and checks for errors
  */
 async function handleResponse(response: Response) {

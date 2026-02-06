@@ -60,6 +60,8 @@ import { ThinkingAnimation } from "./components/ThinkingAnimation"
 import { UserAvatar } from "./components/user-avatar"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { CodeHighlighter } from "./components/code-highlighter"
+import { useSettings } from "./context/settings-context"
+
 
 interface Message {
   role: "user" | "assistant"
@@ -81,6 +83,9 @@ interface SessionsResponse {
 
 export default function ChatInterface() {
   const { toast } = useToast()
+  const { settings } = useSettings()
+  const appName = settings?.name || "Muse"
+
   const [sessions, setSessions] = React.useState<ChatSession[]>([])
   const [currentSessionId, setCurrentSessionId] = React.useState<string>("")
   const [messages, setMessages] = React.useState<Message[]>([])
@@ -243,12 +248,12 @@ export default function ChatInterface() {
 
     if (currentSession) {
       // If we have a current session with a title, use it as the page title
-      document.title = currentSession.title || "Muse"
+      document.title = currentSession.title || appName
     } else {
-      // Default to "Spark" for new chats or when no session is selected
-      document.title = "Muse"
+      // Default to app name for new chats or when no session is selected
+      document.title = appName
     }
-  }, [currentSessionId, sessions])
+  }, [currentSessionId, sessions, appName])
 
   const loadChatSessions = async (urlSessionId: string | null = null) => {
     try {
@@ -1356,7 +1361,7 @@ export default function ChatInterface() {
               variant="ghost"
               className="flex items-center gap-2 hover:bg-zinc-700/70 text-white hover:text-white transition-all duration-200 rounded-md p-0 md:p-2"
             >
-              <span className="text-lg text-white font-medium">Muse</span>
+              <span className="text-lg text-white font-medium">{appName}</span>
             </Button>
           </div>
           <div className="flex items-center gap-2 ml-auto md:hidden">

@@ -8,6 +8,7 @@ import { API_BASE_URL } from "@/lib/config"
 import Link from "next/link"
 import PhoneInput from "react-phone-number-input"
 import "react-phone-number-input/style.css"
+import { useSettings } from "@/app/context/settings-context"
 
 export default function Signup() {
     const [firstName, setFirstName] = useState("")
@@ -18,6 +19,7 @@ export default function Signup() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const router = useRouter()
+    const { settings } = useSettings()
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -83,10 +85,14 @@ export default function Signup() {
         <div className="min-h-screen flex items-center justify-center bg-[#212121] text-[#B2B2B2]">
             <div className="w-full max-w-[400px] bg-[#2c2c2e] p-8 rounded-xl shadow-2xl border border-zinc-800/50">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-12 h-12 bg-[#6366f1] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/20">
-                        <Play className="w-6 h-6 text-white fill-white ml-1" />
+                    <div className="w-16 h-16 bg-[#6366f1] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/20 overflow-hidden">
+                        {settings?.logo_url ? (
+                            <img src={settings.logo_url} alt={settings.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <Play className="w-6 h-6 text-white fill-white ml-1" />
+                        )}
                     </div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
+                    <h1 className="text-2xl font-bold text-white mb-2">Join {settings?.name || "Muse"}</h1>
                     <p className="text-sm text-zinc-400 text-center">
                         Sign up to get started
                     </p>
