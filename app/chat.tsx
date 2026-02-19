@@ -1669,7 +1669,7 @@ export default function ChatInterface() {
                     }
                   }}
                   placeholder="Ask anything"
-                  className="w-full bg-secondary/30 border-2 border-secondary rounded-3xl px-4 py-3 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 hover:shadow-md hover:border-primary/30 resize-none overflow-y-auto min-h-[46px] max-h-[200px]"
+                  className="w-full bg-input border border-border rounded-3xl px-4 py-3 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 hover:shadow-md resize-none overflow-y-auto min-h-[46px] max-h-[200px]"
                   disabled={isLoading}
                   rows={1}
                 />
