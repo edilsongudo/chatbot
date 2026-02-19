@@ -135,6 +135,21 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                         }
                         if (light.text_muted) root.style.setProperty("--muted-foreground", hexToHSL(light.text_muted))
                         if (light.accent_hover) root.style.setProperty("--accent-hover", hexToHSL(light.accent_hover))
+                        if (light.text_placeholder) {
+                            // Can define --placeholder or use --muted-foreground for placeholders too
+                            // but let's stick to root vars we might need later or just --muted-foreground if we don't have a specific var.
+                            // Assuming we don't have --placeholder specifically mapped, we'll map it to a new custom var for completeness
+                            root.style.setProperty("--placeholder", hexToHSL(light.text_placeholder))
+                        }
+
+                        if (light.avatar_bg) root.style.setProperty("--avatar-bg", hexToHSL(light.avatar_bg))
+                        if (light.avatar_text) root.style.setProperty("--avatar-text", hexToHSL(light.avatar_text))
+                        if (light.icon_default) root.style.setProperty("--icon-default", hexToHSL(light.icon_default))
+
+                        // We can also map input_border explicitly to --border if it specifically handles input borders
+                        // We'll set a custom --input-border variable that we can use globally
+                        if (light.input_border) root.style.setProperty("--input-border", hexToHSL(light.input_border))
+                        if (light.input_border_hover) root.style.setProperty("--input-border-hover", hexToHSL(light.input_border_hover))
                     }
                 }
             } catch (error) {
