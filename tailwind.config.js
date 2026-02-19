@@ -41,6 +41,7 @@ const config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          hover: "hsl(var(--accent-hover))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -73,12 +74,20 @@ const config = {
           from: { transform: "rotate(0deg)" },
           to: { transform: "rotate(360deg)" },
         },
+        "pulse-scale": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.3)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "spin-slow": "spin-slow 3s linear infinite",
         "spin-slower": "spin-slower 5s linear infinite",
+        "pulse-scale": "pulse-scale 1s ease-in-out infinite",
+      },
+      fontFamily: {
+        merriweather: ["var(--font-merriweather)", "serif"],
       },
     },
   },

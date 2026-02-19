@@ -1,3 +1,4 @@
+import hljs from "highlight.js"
 import DOMPurify from "isomorphic-dompurify"
 import { marked } from "marked"
 
@@ -17,19 +18,16 @@ export function markdownToHtml(markdown: string): string {
       return link.replace("<a", '<a target="_blank" rel="noopener noreferrer"')
     }
 
-    // Configure marked for code highlighting without highlight.js
+    // Configure marked for code highlighting
     marked.setOptions({
-      renderer, // Use custom renderer
-      breaks: true, // Convert line breaks to <br>
-      gfm: true, // Enable GitHub Flavored Markdown
-      headerIds: true, // Generate IDs for headers
-      mangle: false, // Don't modify header text
-      smartLists: true, // Use smarter list behavior
-      smartypants: true, // Use typographic quotes and dashes
-      xhtml: false, // Don't use self-closing XHTML tags
+      renderer,
+      breaks: true,
+      gfm: true,
       highlight: (code, lang) => {
-        // Just add the language class without using highlight.js
-        return `<code class="language-${lang || "plaintext"}">${code}</code>`
+        if (lang && hljs.getLanguage(lang)) {
+          return hljs.highlight(code, { language: lang }).value
+        }
+        return hljs.highlightAuto(code).value
       },
     })
 

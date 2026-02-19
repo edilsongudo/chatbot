@@ -4,17 +4,23 @@ import type React from "react"
 import Head from "next/head"
 
 import { useEffect } from "react"
-import { Inter } from "next/font/google"
-// import "./globals.css"
+import { Inter, Merriweather } from "next/font/google"
+import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 import { LoadingScreen } from "./components/loading-screen"
-// Remove the highlight.js import
+import "./highlight.css"
 import { FaviconHandler } from "./components/favicon-handler"
 import { SettingsProvider } from "./context/settings-context"
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+})
+
+const merriweather = Merriweather({
+  subsets: ["latin"],
+  weight: ["300", "400", "700", "900"],
+  variable: "--font-merriweather",
 })
 
 export default function ClientLayout({
@@ -38,7 +44,7 @@ export default function ClientLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${merriweather.className} ${merriweather.variable} antialiased`}>
         <SettingsProvider>
           <Head>
             <link rel="icon" href="https://portfolio-webapp.s3.eu-central-1.amazonaws.com/assets/museedlogo.png" />

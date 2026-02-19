@@ -1,10 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
 import ClientLayout from "./ClientLayout"
 
-const inter = Inter({ subsets: ["latin"] })
+// Inter is now managed in ClientLayout.tsx
 
 export const viewport = {
   themeColor: "#18181b",

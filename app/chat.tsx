@@ -903,7 +903,7 @@ export default function ChatInterface() {
       const html = markdownToHtml(message.content)
       return (
         <div
-          className="text-sm leading-relaxed prose prose-invert max-w-none"
+          className="text-sm leading-relaxed prose max-w-none"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       )
@@ -1145,18 +1145,18 @@ export default function ChatInterface() {
   }, [input])
 
   return (
-    <div className="flex h-screen bg-zinc-900 text-white overflow-hidden">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
       {/* Add the CodeHighlighter component */}
       <CodeHighlighter />
 
       {/* Sidebar - com animação de slide */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-[260px] border-r border-zinc-800 flex flex-col bg-zinc-900 transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 w-[260px] border-r border-border flex flex-col bg-background transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="h-[60px] px-4 border-b border-zinc-800 flex items-center justify-between">
+        <div className="h-[60px] px-4 border-b border-border flex items-center justify-between">
           <div className="w-8 h-8">
             <SparkLogo />
           </div>
@@ -1166,7 +1166,7 @@ export default function ChatInterface() {
               size="icon"
               onClick={refreshSessions}
               disabled={isRefreshing}
-              className="h-8 w-8 hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+              className="h-8 w-8 hover:bg-secondary/70 text-muted-foreground hover:text-foreground transition-all duration-200 rounded-md"
               title="Refresh chat list"
             >
               <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
@@ -1176,7 +1176,7 @@ export default function ChatInterface() {
               size="icon"
               onClick={startNewChat}
               disabled={isLoading}
-              className="h-8 w-8 hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+              className="h-8 w-8 hover:bg-secondary/70 text-muted-foreground hover:text-foreground transition-all duration-200 rounded-md"
               title="New chat"
             >
               <PenSquare className="h-4 w-4" />
@@ -1186,7 +1186,7 @@ export default function ChatInterface() {
                 variant="ghost"
                 size="icon"
                 onClick={toggleSidebar}
-                className="h-8 w-8 md:hidden hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+                className="h-8 w-8 md:hidden hover:bg-secondary/70 text-muted-foreground hover:text-foreground transition-all duration-200 rounded-md"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -1199,8 +1199,8 @@ export default function ChatInterface() {
               <div
                 key={session.id}
                 className={cn(
-                  "group relative p-2 hover:bg-zinc-800/70 transition-all duration-200 rounded-md my-1 mx-1 cursor-pointer",
-                  currentSessionId === session.id && "bg-zinc-800 shadow-sm",
+                  "group relative p-2 hover:bg-secondary/70 transition-all duration-200 rounded-md my-1 mx-1 cursor-pointer",
+                  currentSessionId === session.id && "bg-secondary shadow-sm",
                 )}
                 onClick={() => handleSessionClick(session.id)}
               >
@@ -1209,7 +1209,7 @@ export default function ChatInterface() {
                     <Input
                       value={editingSessionTitle}
                       onChange={(e) => setEditingSessionTitle(e.target.value)}
-                      className="h-8 bg-zinc-700 border-zinc-600 text-sm"
+                      className="h-8 bg-muted border-border text-sm"
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -1241,7 +1241,7 @@ export default function ChatInterface() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-all duration-200 ml-1 flex-shrink-0 hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 rounded-md"
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-all duration-200 ml-1 flex-shrink-0 hover:bg-secondary/80 text-muted-foreground hover:text-foreground rounded-md"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <MoreHorizontal className="h-4 w-4" />
@@ -1249,11 +1249,11 @@ export default function ChatInterface() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="w-40 bg-zinc-900 border-zinc-800 rounded-md shadow-lg animate-in fade-in-80 slide-in-from-top-5"
+                        className="w-40 bg-card border-border rounded-md shadow-lg animate-in fade-in-80 slide-in-from-top-5"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <DropdownMenuItem
-                          className="text-zinc-200 hover:bg-zinc-800/70 focus:bg-zinc-800/70 focus:text-zinc-200 transition-colors duration-200 rounded-sm my-1"
+                          className="text-foreground hover:bg-secondary/80 focus:bg-secondary/80 focus:text-foreground transition-colors duration-200 rounded-sm my-1"
                           onClick={() => startEditingSession(session.id, session.title)}
                         >
                           <Edit className="h-4 w-4 mr-2" />
@@ -1273,61 +1273,61 @@ export default function ChatInterface() {
               </div>
             ))
           ) : (
-            <div className="p-4 text-center text-zinc-500 text-sm">
+            <div className="p-4 text-center text-muted-foreground text-sm">
               {isLoading ? "Loading sessions..." : "No chat sessions found"}
             </div>
           )}
         </div>
 
         {/* User Profile Section */}
-        <div className="px-2 py-4 border-t border-zinc-800">
+        <div className="px-2 py-4 border-t border-border">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-zinc-800 transition-colors duration-200 group text-left outline-none">
-                <div className="w-8 h-8 flex-shrink-0 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-medium text-emerald-500 bg-emerald-500/10">
+              <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-secondary/70 transition-colors duration-200 group text-left outline-none">
+                <div className="w-8 h-8 flex-shrink-0 rounded-full bg-secondary flex items-center justify-center text-sm font-semibold text-primary">
                   {userInfo?.first_name ? userInfo.first_name[0].toUpperCase() : (userInfo?.email?.[0].toUpperCase() || "U")}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-zinc-200 group-hover:text-white truncate">
+                  <p className="text-sm font-medium text-foreground group-hover:text-foreground truncate">
                     {userInfo?.first_name || userInfo?.last_name
                       ? `${userInfo.first_name || ''} ${userInfo.last_name || ''}`.trim()
                       : (userInfo?.email?.split('@')[0] || "User")}
                   </p>
                 </div>
-                <MoreHorizontal className="w-4 h-4 text-zinc-500 group-hover:text-zinc-300" />
+                <MoreHorizontal className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64 bg-zinc-900 border-zinc-800 text-zinc-200 p-1.5 shadow-xl mb-2 ml-4">
+            <DropdownMenuContent className="w-64 bg-card border-border text-foreground p-1.5 shadow-xl mb-2 ml-4">
               <div className="flex items-center gap-3 p-2 mb-1 rounded-sm">
-                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-medium text-emerald-500 bg-emerald-500/10">
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-semibold text-primary">
                   {userInfo?.first_name ? userInfo.first_name[0].toUpperCase() : (userInfo?.email?.[0].toUpperCase() || "U")}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
+                  <p className="text-sm font-medium text-foreground truncate">
                     {userInfo?.first_name || userInfo?.last_name
                       ? `${userInfo.first_name || ''} ${userInfo.last_name || ''}`.trim()
                       : (userInfo?.email?.split('@')[0] || "User")}
                   </p>
-                  <p className="text-xs text-zinc-500 truncate">{userInfo?.email || "user"}</p>
+                  <p className="text-xs text-muted-foreground truncate">{userInfo?.email || "user"}</p>
                 </div>
               </div>
-              <div className="h-px bg-zinc-800 my-1.5 mx-2" />
-              <DropdownMenuItem className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer">
+              <div className="h-px bg-border my-1.5 mx-2" />
+              <DropdownMenuItem className="text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer">
                 <CreditCard className="w-4 h-4 mr-2" />
                 Upgrade plan
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem className="text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer">
                 <User className="w-4 h-4 mr-2" />
                 Personalization
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem className="text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </DropdownMenuItem>
-              <div className="h-px bg-zinc-800 my-1.5 mx-2" />
+              <div className="h-px bg-border my-1.5 mx-2" />
               <DropdownMenuItem
                 onClick={handleLogout}
-                className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
+                className="text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Log out
@@ -1343,25 +1343,25 @@ export default function ChatInterface() {
       )}
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col w-full h-screen overflow-hidden bg-zinc-850 relative">
+      <div className="flex-1 flex flex-col w-full h-screen overflow-hidden bg-background relative">
         {/* Top Bar - Fixa em todos os dispositivos */}
-        <div className="sticky top-0 z-20 flex items-center h-[60px] px-4 border-b border-zinc-800 bg-zinc-850">
+        <div className="sticky top-0 z-20 flex items-center h-[60px] px-4 border-b border-border bg-background">
           <div className="flex items-center gap-2">
             {!sidebarOpen && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleSidebar}
-                className="md:hidden hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+                className="md:hidden hover:bg-secondary/70 text-muted-foreground hover:text-foreground transition-all duration-200 rounded-md"
               >
                 <Menu className="h-5 w-5" />
               </Button>
             )}
             <Button
               variant="ghost"
-              className="flex items-center gap-2 hover:bg-zinc-700/70 text-white hover:text-white transition-all duration-200 rounded-md p-0 md:p-2"
+              className="flex items-center gap-2 hover:bg-secondary/70 text-foreground hover:text-foreground transition-all duration-200 rounded-md p-0 md:p-2"
             >
-              <span className="text-lg text-white font-medium">{appName}</span>
+              <span className="text-lg text-foreground font-medium">{appName}</span>
             </Button>
           </div>
           <div className="flex items-center gap-2 ml-auto md:hidden">
@@ -1370,7 +1370,7 @@ export default function ChatInterface() {
               size="icon"
               onClick={startNewChat}
               disabled={isLoading}
-              className="hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+              className="hover:bg-secondary/70 text-muted-foreground hover:text-foreground transition-all duration-200 rounded-md"
             >
               <PenSquare className="h-5 w-5" />
             </Button>
@@ -1387,7 +1387,7 @@ export default function ChatInterface() {
           <div className="chat-container py-4 space-y-1 w-full">
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center min-h-[55vh] gap-4">
-                <p className="text-zinc-500">
+                <p className="text-muted-foreground">
                   {currentSessionId
                     ? "Start a conversation by typing a message below"
                     : "Start typing below to begin a new chat"}
@@ -1431,7 +1431,7 @@ export default function ChatInterface() {
                           <textarea
                             value={editingMessageContent}
                             onChange={(e) => setEditingMessageContent(e.target.value)}
-                            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full bg-background border-2 border-primary/20 rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
                             autoFocus
                           />
                           <div className="flex gap-2 justify-end">
@@ -1456,7 +1456,7 @@ export default function ChatInterface() {
                       ) : (
                         <>
                           <div
-                            className="text-base leading-relaxed prose prose-invert max-w-none select-text"
+                            className="text-base leading-relaxed prose max-w-none select-text"
                             dangerouslySetInnerHTML={{ __html: markdownToHtml(message.content) }}
                             onClick={(e) => e.stopPropagation()}
                             onMouseDown={(e) => e.stopPropagation()}
@@ -1467,7 +1467,7 @@ export default function ChatInterface() {
                                 e.stopPropagation()
                                 confirmDeleteMessage(messageId!)
                               }}
-                              className={`p-1.5 rounded-md text-zinc-400 hover:text-red-400 hover:bg-zinc-700/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
+                              className={`p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-accent/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
                               aria-label="Delete message"
                               title="Delete message"
                               disabled={!messageId}
@@ -1478,7 +1478,7 @@ export default function ChatInterface() {
                               onClick={() => copyMessageContent(index)}
                               className={`p-1.5 rounded-md ${copiedMessageIndex === index
                                 ? "text-green-400"
-                                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50"
+                                : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                                 } transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
                               aria-label={copiedMessageIndex === index ? "Copied" : "Copy to clipboard"}
                               title={copiedMessageIndex === index ? "Copied!" : "Copy to clipboard"}
@@ -1502,7 +1502,7 @@ export default function ChatInterface() {
                               <textarea
                                 value={editingMessageContent}
                                 onChange={(e) => setEditingMessageContent(e.target.value)}
-                                className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full bg-background border-2 border-primary/20 rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
                                 autoFocus
                               />
                               <div className="flex gap-2 justify-end">
@@ -1510,7 +1510,7 @@ export default function ChatInterface() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={cancelEditingMessage}
-                                  className="text-zinc-400 hover:text-zinc-200"
+                                  className="text-muted-foreground hover:text-foreground"
                                 >
                                   Cancel
                                 </Button>
@@ -1518,14 +1518,14 @@ export default function ChatInterface() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={saveEditedMessage}
-                                  className="text-blue-400 hover:text-blue-300"
+                                  className="text-primary hover:text-primary/80"
                                 >
                                   Save
                                 </Button>
                               </div>
                             </div>
                           ) : (
-                            <div className="text-base leading-relaxed whitespace-pre-wrap bg-zinc-800 p-4 rounded-lg user-message-bubble max-w-[85%] text-left">
+                            <div className="text-base leading-relaxed whitespace-pre-wrap bg-secondary text-foreground p-4 rounded-lg user-message-bubble max-w-[85%] text-left">
                               {message.content}
                             </div>
                           )}
@@ -1537,7 +1537,7 @@ export default function ChatInterface() {
                               onClick={() => copyMessageContent(index)}
                               className={`p-1.5 rounded-md ${copiedMessageIndex === index
                                 ? "text-green-400"
-                                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50"
+                                : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                                 } transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"}`}
                               aria-label={copiedMessageIndex === index ? "Copied" : "Copy to clipboard"}
                               title={copiedMessageIndex === index ? "Copied!" : "Copy to clipboard"}
@@ -1550,7 +1550,7 @@ export default function ChatInterface() {
                             </button>
                             <button
                               onClick={() => startEditingMessage(index)}
-                              className={`p-1.5 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
+                              className={`p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
                                 }`}
                               aria-label="Edit message"
                               title="Edit message"
@@ -1562,7 +1562,7 @@ export default function ChatInterface() {
                                 e.stopPropagation()
                                 confirmDeleteMessage(messageId!)
                               }}
-                              className={`p-1.5 rounded-md text-zinc-400 hover:text-red-400 hover:bg-zinc-700/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
+                              className={`p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-accent/50 transition-all duration-200 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
                                 }`}
                               aria-label="Delete message"
                               title="Delete message"
@@ -1574,12 +1574,12 @@ export default function ChatInterface() {
                             {/* Branch navigation controls */}
                             {hasChildren && branchCount > 1 && (
                               <div
-                                className={`flex items-center gap-1 text-zinc-400 ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
+                                className={`flex items-center gap-1 text-muted-foreground ${hoveredMessageIndex === index ? "opacity-100" : "opacity-0"
                                   } transition-all duration-200`}
                               >
                                 <button
                                   onClick={() => messageId && navigateToBranch(messageId, "prev")}
-                                  className="p-1.5 rounded-md hover:text-zinc-200 hover:bg-zinc-700/50"
+                                  className="p-1.5 rounded-md hover:text-foreground hover:bg-accent/50"
                                   aria-label="Previous branch"
                                   title="Previous branch"
                                 >
@@ -1590,7 +1590,7 @@ export default function ChatInterface() {
                                 </span>
                                 <button
                                   onClick={() => messageId && navigateToBranch(messageId, "next")}
-                                  className="p-1.5 rounded-md hover:text-zinc-200 hover:bg-zinc-700/50"
+                                  className="p-1.5 rounded-md hover:text-foreground hover:bg-accent/50"
                                   aria-label="Next branch"
                                   title="Next branch"
                                 >
@@ -1636,7 +1636,7 @@ export default function ChatInterface() {
               variant="secondary"
               size="icon"
               onClick={scrollToBottom}
-              className="h-10 w-10 rounded-full bg-zinc-800/90 border border-zinc-700 text-zinc-100 hover:bg-zinc-700 shadow-lg backdrop-blur-sm"
+              className="h-10 w-10 rounded-full bg-secondary/90 border border-border text-foreground hover:bg-secondary shadow-lg backdrop-blur-sm"
             >
               <ChevronDown className="h-5 w-5" />
             </Button>
@@ -1644,7 +1644,7 @@ export default function ChatInterface() {
         )}
 
         {/* Input Area - Fixa na parte inferior em todos os dispositivos */}
-        <div className="sticky bottom-0 left-0 right-0 z-20 p-4 border-t border-zinc-800 bg-zinc-850">
+        <div className="sticky bottom-0 left-0 right-0 z-20 p-4 border-t border-border bg-background">
           <form onSubmit={handleSubmit} className="flex justify-center">
             <div className="relative w-full max-w-3xl mx-auto">
               {/* Wrapper: textarea + botões (botões fora do textarea), com centralização vertical quando pequeno, bottom quando grande */}
@@ -1669,7 +1669,7 @@ export default function ChatInterface() {
                     }
                   }}
                   placeholder="Ask anything"
-                  className="w-full bg-[#303030] rounded-3xl px-4 py-3 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md resize-none overflow-y-auto min-h-[46px] max-h-[200px]"
+                  className="w-full bg-secondary/30 border-2 border-secondary rounded-3xl px-4 py-3 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 hover:shadow-md hover:border-primary/30 resize-none overflow-y-auto min-h-[46px] max-h-[200px]"
                   disabled={isLoading}
                   rows={1}
                 />
@@ -1681,7 +1681,7 @@ export default function ChatInterface() {
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 hover:bg-zinc-700/70 text-zinc-300 hover:text-zinc-100 transition-all duration-200 rounded-md"
+                    className="h-8 w-8 hover:bg-secondary/70 text-muted-foreground hover:text-foreground transition-all duration-200 rounded-md"
                     disabled={isLoading}
                   >
                     <Paperclip className="h-4 w-4" />
@@ -1693,8 +1693,8 @@ export default function ChatInterface() {
                     className={cn(
                       "h-8 w-8 rounded-full transition-all duration-200",
                       isLoading || !input.trim()
-                        ? "bg-zinc-700 text-zinc-500 cursor-not-allowed"
-                        : "bg-white text-zinc-900 hover:bg-zinc-100",
+                        ? "bg-transparent border border-primary/20 text-primary/30 cursor-not-allowed"
+                        : "bg-primary text-primary-foreground hover:opacity-90 shadow-md",
                     )}
                     disabled={isLoading || !input.trim()}
                   >
@@ -1725,16 +1725,16 @@ export default function ChatInterface() {
           }
         }}
       >
-        <AlertDialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <AlertDialogContent className="bg-background border-border text-foreground">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Chat</AlertDialogTitle>
-            <AlertDialogDescription className="text-zinc-400">
+            <AlertDialogDescription className="text-muted-foreground">
               Are you sure you want to delete this chat? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="bg-zinc-800 text-white hover:bg-zinc-700 transition-colors duration-200"
+              className="bg-accent text-foreground hover:bg-accent/80 transition-colors duration-200"
               onClick={(e) => {
                 // Prevent any potential event bubbling issues
                 e.stopPropagation()
@@ -1773,16 +1773,16 @@ export default function ChatInterface() {
         open={isDeleteMessageDialogOpen}
         onOpenChange={setIsDeleteMessageDialogOpen}
       >
-        <AlertDialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <AlertDialogContent className="bg-background border-border text-foreground">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Message</AlertDialogTitle>
-            <AlertDialogDescription className="text-zinc-400">
+            <AlertDialogDescription className="text-muted-foreground">
               Are you sure you want to delete this message? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="bg-zinc-800 text-white hover:bg-zinc-700 transition-colors duration-200"
+              className="bg-accent text-foreground hover:bg-accent/80 transition-colors duration-200"
               onClick={() => setIsDeleteMessageDialogOpen(false)}
             >
               Cancel

@@ -82,76 +82,76 @@ export default function Signup() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#212121] text-[#B2B2B2]">
-            <div className="w-full max-w-[400px] bg-[#2c2c2e] p-8 rounded-xl shadow-2xl border border-zinc-800/50">
+        <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+            <div className="w-full max-w-[400px] bg-card p-8 rounded-xl shadow-2xl border border-border/50">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-16 h-16 bg-[#6366f1] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/20 overflow-hidden">
+                    <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4 shadow-lg shadow-primary/20 overflow-hidden">
                         {settings?.logo_url ? (
                             <img src={settings.logo_url} alt={settings.name} className="w-full h-full object-cover" />
                         ) : (
                             <Play className="w-6 h-6 text-white fill-white ml-1" />
                         )}
                     </div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Join {settings?.name || "Muse"}</h1>
-                    <p className="text-sm text-zinc-400 text-center">
+                    <h1 className="text-2xl font-bold text-foreground mb-2">Join {settings?.name || "Muse"}</h1>
+                    <p className="text-sm text-muted-foreground text-center">
                         Sign up to get started
                     </p>
                 </div>
 
                 <form onSubmit={handleSignup} className="space-y-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-white ml-1">First Name</label>
+                        <label className="text-sm font-medium text-foreground ml-1">First Name</label>
                         <Input
                             type="text"
                             placeholder="Your Name"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
-                            className="bg-[#18181b] border-zinc-700 text-white placeholder:text-zinc-500 rounded-lg h-11 focus-visible:ring-indigo-500"
+                            className="bg-muted border-border text-foreground placeholder:text-muted-foreground rounded-lg h-11 focus-visible:ring-primary"
                             required
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-white ml-1">Email</label>
+                        <label className="text-sm font-medium text-foreground ml-1">Email</label>
                         <Input
                             type="email"
                             placeholder="name@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="bg-[#18181b] border-zinc-700 text-white placeholder:text-zinc-500 rounded-lg h-11 focus-visible:ring-indigo-500"
+                            className="bg-muted border-border text-foreground placeholder:text-muted-foreground rounded-lg h-11 focus-visible:ring-primary"
                             required
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-white ml-1">Phone Number</label>
+                        <label className="text-sm font-medium text-foreground ml-1">Phone Number</label>
                         <PhoneInput
                             placeholder="Enter phone number"
                             value={phoneNumber}
                             onChange={(value) => setPhoneNumber(value || "")}
                             defaultCountry="US"
-                            className="bg-[#18181b] border-zinc-700 text-white rounded-lg h-11 focus-visible:ring-indigo-500"
+                            className="bg-muted border-border text-foreground rounded-lg h-11 focus-visible:ring-primary"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-white ml-1">Password</label>
+                        <label className="text-sm font-medium text-foreground ml-1">Password</label>
                         <Input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="bg-[#18181b] border-zinc-700 text-white placeholder:text-zinc-500 rounded-lg h-11 focus-visible:ring-indigo-500"
+                            className="bg-muted border-border text-foreground placeholder:text-muted-foreground rounded-lg h-11 focus-visible:ring-primary"
                             required
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-white ml-1">Confirm Password</label>
+                        <label className="text-sm font-medium text-foreground ml-1">Confirm Password</label>
                         <Input
                             type="password"
                             value={passwordConfirm}
                             onChange={(e) => setPasswordConfirm(e.target.value)}
-                            className="bg-[#18181b] border-zinc-700 text-white placeholder:text-zinc-500 rounded-lg h-11 focus-visible:ring-indigo-500"
+                            className="bg-muted border-border text-foreground placeholder:text-muted-foreground rounded-lg h-11 focus-visible:ring-primary"
                             required
                         />
                     </div>
@@ -165,15 +165,15 @@ export default function Signup() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-white text-black font-semibold h-11 rounded-lg mt-6 hover:bg-gray-100 transition-colors disabled:opacity-70 disabled:cursor-not-allowed text-sm"
+                        className="w-full bg-primary text-primary-foreground font-semibold h-11 rounded-lg mt-6 hover:opacity-90 transition-opacity disabled:opacity-70 disabled:cursor-not-allowed text-sm"
                     >
                         {loading ? "Creating account..." : "Sign up"}
                     </button>
 
                     <div className="text-center mt-4">
-                        <p className="text-sm text-zinc-400">
+                        <p className="text-sm text-muted-foreground">
                             Already have an account?{" "}
-                            <Link href="/login" className="text-indigo-400 hover:text-indigo-300 hover:underline">
+                            <Link href="/login" className="text-primary hover:underline">
                                 Sign in
                             </Link>
                         </p>
