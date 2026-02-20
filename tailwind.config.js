@@ -51,6 +51,16 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        avatar: {
+          bg: "hsl(var(--avatar-bg))",
+          text: "hsl(var(--avatar-text))",
+        },
+        icon: {
+          default: "hsl(var(--icon-default))",
+        },
+        placeholder: "hsl(var(--placeholder))",
+        "input-border": "hsl(var(--input-border))",
+        "input-border-hover": "hsl(var(--input-border-hover))",
       },
       borderRadius: {
         lg: "var(--radius)",
