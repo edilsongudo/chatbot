@@ -23,12 +23,24 @@ import {
   CreditCard,
   User,
   HelpCircle,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Avatar } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { SparkLogo } from "./components/spark-logo"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger
+} from "@/components/ui/dropdown-menu"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter, useParams } from "next/navigation"
 import {
@@ -83,7 +95,7 @@ interface SessionsResponse {
 
 export default function ChatInterface() {
   const { toast } = useToast()
-  const { settings } = useSettings()
+  const { settings, themeMode, setThemeMode } = useSettings()
   const appName = settings?.name || "Muse"
 
   const [sessions, setSessions] = React.useState<ChatSession[]>([])
@@ -1316,10 +1328,37 @@ export default function ChatInterface() {
                 <CreditCard className="w-4 h-4 mr-2" />
                 Upgrade plan
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer">
-                <User className="w-4 h-4 mr-2" />
-                Personalization
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="text-foreground hover:bg-secondary/70 cursor-pointer">
+                  <User className="w-4 h-4 mr-2" />
+                  Personalization
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent className="bg-card border-border text-foreground">
+                    <DropdownMenuItem
+                      onClick={(e) => { e.stopPropagation(); setThemeMode('light') }}
+                      className="flex items-center text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer"
+                    >
+                      <Sun className="w-4 h-4 mr-2" />
+                      Light
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => { e.stopPropagation(); setThemeMode('dark') }}
+                      className="flex items-center text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer"
+                    >
+                      <Moon className="w-4 h-4 mr-2" />
+                      Dark
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => { e.stopPropagation(); setThemeMode('system') }}
+                      className="flex items-center text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer"
+                    >
+                      <Monitor className="w-4 h-4 mr-2" />
+                      System
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
               <DropdownMenuItem className="text-foreground hover:text-foreground hover:bg-secondary/70 cursor-pointer">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
@@ -1431,7 +1470,7 @@ export default function ChatInterface() {
                           <textarea
                             value={editingMessageContent}
                             onChange={(e) => setEditingMessageContent(e.target.value)}
-                            className="w-full bg-background border-2 border-primary/20 rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                            className="w-full bg-input border border-border rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-ring shadow-sm"
                             autoFocus
                           />
                           <div className="flex gap-2 justify-end">
@@ -1502,7 +1541,7 @@ export default function ChatInterface() {
                               <textarea
                                 value={editingMessageContent}
                                 onChange={(e) => setEditingMessageContent(e.target.value)}
-                                className="w-full bg-background border-2 border-primary/20 rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                                className="w-full bg-input border border-border rounded-md p-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-ring shadow-sm"
                                 autoFocus
                               />
                               <div className="flex gap-2 justify-end">

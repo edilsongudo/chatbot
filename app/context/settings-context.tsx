@@ -33,9 +33,13 @@ interface Settings {
     theme?: Theme
 }
 
+export type ThemeMode = "light" | "dark" | "system"
+
 interface SettingsContextType {
     settings: Settings | null
     isLoading: boolean
+    themeMode: ThemeMode
+    setThemeMode: (mode: ThemeMode) => void
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
@@ -82,75 +86,47 @@ function hexToHSL(hex: string) {
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const [settings, setSettings] = useState<Settings | null>(null)
     const [isLoading, setIsLoading] = useState(true)
+    const [themeMode, setThemeMode] = useState<ThemeMode>("system")
+
+    useEffect(() => {
+        const storedTheme = localStorage.getItem("theme_mode") as ThemeMode | null
+        if (storedTheme) {
+            setThemeMode(storedTheme)
+        }
+    }, [])
+
+    const updateThemeMode = (mode: ThemeMode) => {
+        setThemeMode(mode)
+        localStorage.setItem("theme_mode", mode)
+    }
+
+    useEffect(() => {
+        const root = document.documentElement
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+
+        const applyTheme = () => {
+            if (themeMode === "dark" || (themeMode === "system" && mediaQuery.matches)) {
+                root.classList.add("dark")
+            } else {
+                root.classList.remove("dark")
+            }
+        }
+
+        applyTheme()
+
+        const listener = () => {
+            if (themeMode === "system") applyTheme()
+        }
+        mediaQuery.addEventListener("change", listener)
+        return () => mediaQuery.removeEventListener("change", listener)
+    }, [themeMode])
 
     useEffect(() => {
         const fetchSettings = async () => {
             try {
                 const data = await getSettings()
-                // Require at least name or logo_url, or theme to apply
                 if (data && (data.name || data.logo_url || data.theme)) {
                     setSettings(data)
-
-                    if (data.theme?.light) {
-                        const root = document.documentElement
-                        const light = data.theme.light
-
-                        if (light.app_bg) root.style.setProperty("--background", hexToHSL(light.app_bg))
-                        if (light.text_primary) {
-                            root.style.setProperty("--foreground", hexToHSL(light.text_primary))
-                            root.style.setProperty("--card-foreground", hexToHSL(light.text_primary))
-                            root.style.setProperty("--popover-foreground", hexToHSL(light.text_primary))
-                        }
-                        if (light.surface_bg) {
-                            root.style.setProperty("--card", hexToHSL(light.surface_bg))
-                            root.style.setProperty("--popover", hexToHSL(light.surface_bg))
-                        }
-                        if (light.input_bg) {
-                            root.style.setProperty("--input", hexToHSL(light.input_bg))
-                            // Used by chat user bubbles and sidebars previously mapping from secondary
-                            // We can use chat_user_bg for user bubbles or use what input_bg was mapped to
-                        }
-                        if (light.chat_user_bg) {
-                            root.style.setProperty("--secondary", hexToHSL(light.chat_user_bg))
-                            root.style.setProperty("--muted", hexToHSL(light.chat_user_bg))
-                        } else if (light.input_bg) {
-                            // Fallback if chat_user_bg isn't present
-                            root.style.setProperty("--secondary", hexToHSL(light.input_bg))
-                            root.style.setProperty("--muted", hexToHSL(light.input_bg))
-                        }
-
-                        if (light.border_default) root.style.setProperty("--border", hexToHSL(light.border_default))
-
-                        // We can also map input_border explicitly if needed in globals (or keep using --border for inputs)
-                        // Setting ring to input_border_focus is a good practice for inputs
-                        if (light.input_border_focus) {
-                            root.style.setProperty("--ring", hexToHSL(light.input_border_focus))
-                        } else if (light.accent) {
-                            root.style.setProperty("--ring", hexToHSL(light.accent))
-                        }
-
-                        if (light.accent) {
-                            root.style.setProperty("--primary", hexToHSL(light.accent))
-                            root.style.setProperty("--accent", hexToHSL(light.accent))
-                        }
-                        if (light.text_muted) root.style.setProperty("--muted-foreground", hexToHSL(light.text_muted))
-                        if (light.accent_hover) root.style.setProperty("--accent-hover", hexToHSL(light.accent_hover))
-                        if (light.text_placeholder) {
-                            // Can define --placeholder or use --muted-foreground for placeholders too
-                            // but let's stick to root vars we might need later or just --muted-foreground if we don't have a specific var.
-                            // Assuming we don't have --placeholder specifically mapped, we'll map it to a new custom var for completeness
-                            root.style.setProperty("--placeholder", hexToHSL(light.text_placeholder))
-                        }
-
-                        if (light.avatar_bg) root.style.setProperty("--avatar-bg", hexToHSL(light.avatar_bg))
-                        if (light.avatar_text) root.style.setProperty("--avatar-text", hexToHSL(light.avatar_text))
-                        if (light.icon_default) root.style.setProperty("--icon-default", hexToHSL(light.icon_default))
-
-                        // We can also map input_border explicitly to --border if it specifically handles input borders
-                        // We'll set a custom --input-border variable that we can use globally
-                        if (light.input_border) root.style.setProperty("--input-border", hexToHSL(light.input_border))
-                        if (light.input_border_hover) root.style.setProperty("--input-border-hover", hexToHSL(light.input_border_hover))
-                    }
                 }
             } catch (error) {
                 console.error("Failed to load settings in context:", error)
@@ -162,8 +138,71 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         fetchSettings()
     }, [])
 
+    const generateThemeCss = (theme?: Theme) => {
+        if (!theme) return null
+
+        const buildVars = (t: ThemeColors) => {
+            let css = ""
+            if (t.app_bg) css += `--background: ${hexToHSL(t.app_bg)};\n`
+            if (t.text_primary) {
+                css += `--foreground: ${hexToHSL(t.text_primary)};\n`
+                css += `--card-foreground: ${hexToHSL(t.text_primary)};\n`
+                css += `--popover-foreground: ${hexToHSL(t.text_primary)};\n`
+            }
+            if (t.surface_bg) {
+                css += `--card: ${hexToHSL(t.surface_bg)};\n`
+                css += `--popover: ${hexToHSL(t.surface_bg)};\n`
+            }
+            if (t.input_bg) {
+                css += `--input: ${hexToHSL(t.input_bg)};\n`
+            }
+            if (t.chat_user_bg) {
+                css += `--secondary: ${hexToHSL(t.chat_user_bg)};\n`
+                css += `--muted: ${hexToHSL(t.chat_user_bg)};\n`
+            } else if (t.input_bg) {
+                css += `--secondary: ${hexToHSL(t.input_bg)};\n`
+                css += `--muted: ${hexToHSL(t.input_bg)};\n`
+            }
+            if (t.border_default) css += `--border: ${hexToHSL(t.border_default)};\n`
+
+            if (t.input_border_focus) {
+                css += `--ring: ${hexToHSL(t.input_border_focus)};\n`
+            } else if (t.accent) {
+                css += `--ring: ${hexToHSL(t.accent)};\n`
+            }
+
+            if (t.accent) {
+                css += `--primary: ${hexToHSL(t.accent)};\n`
+                css += `--accent: ${hexToHSL(t.accent)};\n`
+            }
+            if (t.text_muted) css += `--muted-foreground: ${hexToHSL(t.text_muted)};\n`
+            if (t.accent_hover) css += `--accent-hover: ${hexToHSL(t.accent_hover)};\n`
+            if (t.text_placeholder) css += `--placeholder: ${hexToHSL(t.text_placeholder)};\n`
+            if (t.avatar_bg) css += `--avatar-bg: ${hexToHSL(t.avatar_bg)};\n`
+            if (t.avatar_text) css += `--avatar-text: ${hexToHSL(t.avatar_text)};\n`
+            if (t.icon_default) css += `--icon-default: ${hexToHSL(t.icon_default)};\n`
+            if (t.input_border) css += `--input-border: ${hexToHSL(t.input_border)};\n`
+            if (t.input_border_hover) css += `--input-border-hover: ${hexToHSL(t.input_border_hover)};\n`
+
+            return css
+        }
+
+        let css = ""
+        if (theme.light) {
+            css += `:root {\n${buildVars(theme.light)}}\n`
+        }
+        if (theme.dark) {
+            css += `.dark {\n${buildVars(theme.dark)}}\n`
+        }
+
+        return css
+    }
+
     return (
-        <SettingsContext.Provider value={{ settings, isLoading }}>
+        <SettingsContext.Provider value={{ settings, isLoading, themeMode, setThemeMode: updateThemeMode }}>
+            {settings?.theme && (
+                <style dangerouslySetInnerHTML={{ __html: generateThemeCss(settings.theme) || "" }} />
+            )}
             {children}
         </SettingsContext.Provider>
     )
